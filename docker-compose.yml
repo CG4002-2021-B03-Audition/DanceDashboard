@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  # db:
+  #   image: postgres:13.1
+  #   environment:
+  #     POSTGRES_DB: postgres
+  #     POSTGRES_USER: root
+  #     POSTGRES_PASSWORD: password
+  #     PGDATA: /var/lib/postgresql/data
+  #   volumes:
+  #     - db-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  rabbitmq:
+    image: rabbitmq:3-management
+    # for restoring message history
+    # volumes:
+    #   - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    #   - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+    #   - ./rabbitmq/logs:/var/log/rabbitmq/log
+    ports: 
+      - "5672:5672"
+      - "15672:15672"
+
+volumes:
+  db-data:
