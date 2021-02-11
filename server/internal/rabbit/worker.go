@@ -3,22 +3,26 @@ package rabbit
 import (
 	"fmt"
 
-	"github.com/streadway/amqp"
+	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/tasks"
 )
 
+type Worker struct {
+	Conn  *Conn
+	Tasks *tasks.Tasks
+}
+
 /*
-StartWorker creates consumers to the amqp queue created.
-A worker can take in a custom handler which is the task its supposed to execute.
+StartWorker creates workers for the amqp queue created.
 The msg in queue will only be ACK if the handler returns True.
+Task executed by worker depends on the msg received from the queue,
 */
-func (conn Conn) StartWorker(
+func (worker *Worker) StartWorker(
 	queueName,
 	routingKey string,
-	handler func(d amqp.Delivery) bool,
 	concurrency int) error {
 
 	// create queue if it doesn't exist
-	_, err := conn.Channel.QueueDeclare(
+	_, err := worker.Conn.Channel.QueueDeclare(
 		queueName,
 		true,
 		false,
@@ -31,19 +35,19 @@ func (conn Conn) StartWorker(
 	}
 
 	// bind the queue to the routing key
-	err = conn.Channel.QueueBind(queueName, routingKey, "events", false, nil)
+	err = worker.Conn.Channel.QueueBind(queueName, routingKey, "events", false, nil)
 	if err != nil {
 		return err
 	}
 
 	// prefetch messages
 	prefetchCount := concurrency * 4
-	err = conn.Channel.Qos(prefetchCount, 0, false)
+	err = worker.Conn.Channel.Qos(prefetchCount, 0, false)
 	if err != nil {
 		return nil
 	}
 
-	msgs, err := conn.Channel.Consume(
+	msgs, err := worker.Conn.Channel.Consume(
 		queueName,
 		"",
 		false,
@@ -58,9 +62,11 @@ func (conn Conn) StartWorker(
 
 	for i := 0; i < concurrency; i++ {
 		fmt.Printf("Processing messages on thread %v...\n", i)
-		go func() {
+		go func(threadNum int) {
 			for msg := range msgs {
-				if handler(msg) {
+				// can put a switch statement here for multiple tasks
+				if worker.Tasks.SendDanceMove(msg) {
+					fmt.Printf("Thread %v: ", threadNum)
 					msg.Ack(false)
 				} else {
 					// negative ACK and requeue message
@@ -68,7 +74,7 @@ func (conn Conn) StartWorker(
 				}
 			}
 			fmt.Println("Rabbit consumer closed - critical error")
-		}()
+		}(i)
 	}
 	return nil
 }
