@@ -44,6 +44,7 @@ func serveWs(pool *ws.Pool, w http.ResponseWriter, r *http.Request) {
 		Pool: pool,
 	}
 	pool.Register <- client
+	go client.CheckConn()
 }
 
 func main() {
@@ -89,16 +90,32 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(time.Second * 2)
-			data := tasks.CreateDanceMove()
+			data := tasks.GenerateMove()
 			conn.Publish(
-				"test-key",
+				"move",
 				data)
 		}
 	}()
 
-	// start workers
-	err = worker.StartWorker("test-queue", "test-key", 2)
+	// For week 7: fake publisher to send dance position info
+	// go func() {
+	// 	for {
+	// 		time.Sleep(time.Second * 2)
+	// 		data := tasks.GeneratePosition()
+	// 		conn.Publish(
+	// 			"position",
+	// 			data)
+	// 	}
+	// }()
 
+	// start worker for move
+	err = worker.StartWorker("test-queue", "move", 1)
+	if err != nil {
+		panic(err)
+	}
+
+	// start worker for position
+	err = worker.StartWorker("test-queue", "position", 1)
 	if err != nil {
 		panic(err)
 	}
