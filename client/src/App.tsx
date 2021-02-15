@@ -1,14 +1,14 @@
 import React from 'react';
-import BrandLogo from './images/BrandLogo.png'
+import Layout from './components/Layout/Layout';
+import LineChart from './containers/LineChart';
+import TopBar from './components/Menu/TopBar';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div>
-      <header>
-        Welcome to dance party!
-      </header>
-      <img src={BrandLogo} alt="Brand Logo"/>
-    </div>
+      <Layout>
+        <TopBar/>
+        <LineChart/>
+      </Layout>
   );
 }
 
