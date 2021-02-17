@@ -1,9 +1,12 @@
 package tasks
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/ws"
@@ -12,7 +15,8 @@ import (
 
 // Tasks is used to encompass all the services that a worker needs to distribute the message
 type Tasks struct {
-	Pool *ws.Pool // gives workers access to the broadcast channel
+	Pool   *ws.Pool // gives workers access to the broadcast channel
+	DbConn *sql.DB  // gives workers access to the database
 }
 
 // SendTest is a test task for the worker
@@ -34,12 +38,54 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) bool {
 	fmt.Println(string(d.Body))
 	message := ws.Message{Body: string(d.Body)}
 	task.Pool.Broadcast <- message
+
+	// insert moves
+	var jsonData map[string]interface{}
+	if err := json.Unmarshal(d.Body, &jsonData); err != nil {
+		log.Fatal(err)
+	}
+
+	queryString := `
+	insert into moves (move, delay, accuracy, timestamp, aid, did, sid)
+	values ($1, $2, $3, $4, $5, $6, $7)
+	`
+
+	delay, err := strconv.ParseFloat(fmt.Sprintf("%s", jsonData["syncDelay"]), 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	accuracy, err := strconv.ParseFloat(fmt.Sprintf("%s", jsonData["accuracy"]), 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := task.DbConn.Exec(
+		queryString,
+		jsonData["move"],
+		delay,
+		accuracy,
+		fmt.Sprintf("%s", jsonData["timestamp"]),
+		1, // aid
+		1, // did
+		1, // sid
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rowCnt, err := res.RowsAffected()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(rowCnt)
 	return true
 }
 
 /*
 GenerateMove returns a json string which replicates move data from external comms
 Message format: {
+	"dancerId": int,
 	"move": string,
 	"timestamp": string,
 	"syncDelay": string,
@@ -57,12 +103,14 @@ func GenerateMove() []byte {
 		"sidepump",
 		"wipetable",
 	}
+	dancerID := "1"
 	datetime := time.Now().Format("2006-01-02 15:04:05")
 	accuracy := rand.Float64()
 	delay := rand.Float64() * 1.5
 
 	// create json string from map and return json string
 	m := map[string]string{
+		"dancerId":  dancerID,
 		"move":      danceMoves[rand.Intn(8)],
 		"timestamp": datetime,
 		"syncDelay": fmt.Sprintf("%.1f", delay),
