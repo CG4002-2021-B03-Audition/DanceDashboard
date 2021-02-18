@@ -4,8 +4,8 @@ import { Text } from '@chakra-ui/react'
 import { ChartOptions } from 'chart.js'
 
 interface Props {
-    move: number[]
-    accuracy: number[]
+    legendLabels: string[]
+    values: number[]
     chartTitle: string
     options: ChartOptions
 }
@@ -20,10 +20,10 @@ const DoughnutChart: React.FC<Props> = (props) => {
             </div>
             <Doughnut 
                 data={{
-                  labels: props.move.map(el => el.toString() + "%"),
+                  labels: props.legendLabels,
                   datasets: [
                     {
-                      data: props.accuracy,
+                      data: props.values,
                       backgroundColor: [
                         'rgb(128, 90, 213)',
                         'rgb(211,211,211)'

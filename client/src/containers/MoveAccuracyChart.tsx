@@ -34,8 +34,8 @@ const MoveAccuracyChart = () => {
         <>  
             <DoughnutChart 
                 chartTitle={"Move Accuracy (" + currentMove + ")"}
-                move={currentMoveLabel}
-                accuracy={currentMoveAcc}
+                legendLabels={currentMoveLabel.map(el => el.toString() + "%")}
+                values={currentMoveAcc}
                 options={options}
             />
         </>
