@@ -1,0 +1,52 @@
+import React from 'react';
+import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
+
+interface Props {
+    headers: string[],
+    rowData: string[][],
+}
+
+interface HeaderProps {
+    data: string[]
+}
+
+interface BodyProps {
+    data: string[][]
+}
+
+interface RowProps {
+    data: string[]
+}
+
+const TableRows: React.FC<RowProps> = ({data}) => (
+    <Tr>
+        {data.map(item => <Td>{item}</Td>)}
+    </Tr>
+)
+
+const TableHeader: React.FC<HeaderProps> = ({data}) => (
+    <Thead>
+        <Tr>
+            {data.map(item => <Th>{item}</Th>)}
+        </Tr>
+    </Thead>
+)
+
+const TableBody: React.FC<BodyProps> = ({data}) => (
+    <Tbody>
+        {data.map(item => <TableRows data={item}/>)}
+    </Tbody>
+)
+
+const BasicTable: React.FC<Props> = (props) => {
+    console.log(props)
+    return (
+        <Table size="sm">
+            <TableHeader data={props.headers}/>
+            <TableBody data={props.rowData}/>
+        </Table>    
+    )
+    
+}
+
+export default BasicTable;
