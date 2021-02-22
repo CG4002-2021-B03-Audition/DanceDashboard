@@ -19,16 +19,65 @@ import (
 )
 
 // WsHandler reads message from socket and echos it back
-func serveWs(pool *ws.Pool, w http.ResponseWriter, r *http.Request) {
+func serveWs(task *tasks.Tasks, w http.ResponseWriter, r *http.Request, amqpConn *rabbit.Conn) {
 	conn, err := ws.Upgrade(w, r)
 	if err != nil {
 		fmt.Fprintf(w, "%+V\n", err)
 	}
 	client := &ws.Client{
 		Conn: conn,
-		Pool: pool,
+		Pool: task.Pool,
 	}
-	pool.Register <- client
+	task.Pool.Register <- client
+	task.Client = client
+
+	querySid := `
+		select sid, aid from sessions 
+		where timestamp = (select max(timestamp) from sessions) and sid = (select max(sid) from sessions)
+	`
+
+	rows, err := task.DbConn.Query(querySid)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&task.SessionID, &task.AccountID)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	queryString := `insert into sessions (sid, aid, timestamp) values ($1, $2, $3)`
+	res, err := task.DbConn.Exec(
+		queryString,
+		task.SessionID+1,
+		task.AccountID,
+		time.Now().Format("2006-01-02 15:04:05"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Started a new session: %v\n", res)
+
+	// initialise worker
+	worker := rabbit.Worker{
+		Conn:  amqpConn,
+		Tasks: task,
+	}
+	// For week 7: fake publisher to send dance move info
+	// start worker for move
+	err = worker.StartWorker("test-queue", "move", 1)
+	if err != nil {
+		panic(err)
+	}
+
+	// start worker for position
+	err = worker.StartWorker("test-queue", "position", 1)
+	if err != nil {
+		panic(err)
+	}
+
 	go client.CheckConn()
 }
 
@@ -40,6 +89,14 @@ func main() {
 	endpoint := os.Getenv("RABBITMQ_URI")
 
 	router := gin.New()
+
+	// add middlewares
+	router.Use(
+		gin.Recovery(),
+		gin.Logger(),
+		// middlewares.BasicAuth(db),
+		middlewares.EnableCORS("http://localhost:3000"),
+	)
 
 	// connect to db
 	dsn := "host=localhost user=root password=password dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Singapore"
@@ -56,16 +113,28 @@ func main() {
 	}
 	defer db.Close()
 
-	router.POST("/login", func(c *gin.Context) {
+	// initialise websocket routes
+	pool := ws.NewPool()
+	go pool.Start()
+
+	// initialise tasks
+	t := tasks.Tasks{
+		Pool:   pool,
+		DbConn: db,
+	}
+
+	// initialise rabbit
+	amqpConn, err := rabbit.GetConn(endpoint)
+	if err != nil {
+		panic(err)
+	}
+
+	router.GET("/ws", func(c *gin.Context) {
+		serveWs(&t, c.Writer, c.Request, &amqpConn)
 	})
 
-	// add middlewares
-	router.Use(
-		gin.Recovery(),
-		gin.Logger(),
-		// middlewares.BasicAuth(db),
-		middlewares.EnableCORS("http://localhost:3000"),
-	)
+	router.POST("/login", func(c *gin.Context) {
+	})
 
 	// add routes
 	router.GET("/ping", func(c *gin.Context) {
@@ -130,40 +199,14 @@ func main() {
 	router.POST("/session/:id", func(c *gin.Context) {
 	})
 
-	// initialise websocket routes
-	pool := ws.NewPool()
-	go pool.Start()
-
-	router.GET("/ws", func(c *gin.Context) {
-		serveWs(pool, c.Writer, c.Request)
-	})
-
-	// initialise rabbit
-	conn, err := rabbit.GetConn(endpoint)
-	if err != nil {
-		panic(err)
-	}
-
-	// initialise tasks
-	t := tasks.Tasks{
-		Pool:   pool,
-		DbConn: db,
-	}
-
-	// initialise worker
-	worker := rabbit.Worker{
-		Conn:  &conn,
-		Tasks: &t,
-	}
-
-	// For week 7: fake publisher to send dance move info
 	go func() {
 		for {
 			time.Sleep(time.Second * 2)
 			data := tasks.GenerateMove()
-			conn.Publish(
+			amqpConn.Publish(
 				"move",
-				data)
+				data,
+			)
 		}
 	}()
 
@@ -177,18 +220,6 @@ func main() {
 	// 			data)
 	// 	}
 	// }()
-
-	// start worker for move
-	err = worker.StartWorker("test-queue", "move", 1)
-	if err != nil {
-		panic(err)
-	}
-
-	// start worker for position
-	err = worker.StartWorker("test-queue", "position", 1)
-	if err != nil {
-		panic(err)
-	}
 
 	router.Run(":8080")
 }

@@ -3,6 +3,7 @@ package tasks
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -15,8 +16,11 @@ import (
 
 // Tasks is used to encompass all the services that a worker needs to distribute the message
 type Tasks struct {
-	Pool   *ws.Pool // gives workers access to the broadcast channel
-	DbConn *sql.DB  // gives workers access to the database
+	Pool      *ws.Pool   // gives workers access to the broadcast channel
+	DbConn    *sql.DB    // gives workers access to the database
+	Client    *ws.Client // gives workers access to client
+	SessionID int        // task will be tagged to the session id
+	AccountID int        // task will be tagged to the account id
 }
 
 // SendTest is a test task for the worker
@@ -30,13 +34,18 @@ func (task *Tasks) SendTest(d amqp.Delivery) bool {
 }
 
 // SendDanceMove is a custom task for the worker
-func (task *Tasks) SendDanceMove(d amqp.Delivery) bool {
+func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
+	// checks if client websocket connection is alive
+	if _, ok := task.Pool.Clients[task.Client]; !ok {
+		return false, errors.New("client websocket disconnected")
+	}
 	if d.Body == nil {
 		fmt.Println("Error, no message body!")
-		return false
+		return false, nil
 	}
 	fmt.Println(string(d.Body))
 	message := ws.Message{Body: string(d.Body)}
+
 	task.Pool.Broadcast <- message
 
 	// insert moves
@@ -46,8 +55,8 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) bool {
 	}
 
 	queryString := `
-	insert into moves (move, delay, accuracy, timestamp, aid, did, sid)
-	values ($1, $2, $3, $4, $5, $6, $7)
+		insert into moves (move, delay, accuracy, timestamp, aid, did, sid)
+		values ($1, $2, $3, $4, $5, $6, $7)
 	`
 
 	delay, err := strconv.ParseFloat(fmt.Sprintf("%s", jsonData["syncDelay"]), 64)
@@ -65,9 +74,9 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) bool {
 		delay,
 		accuracy,
 		fmt.Sprintf("%s", jsonData["timestamp"]),
-		1, // aid
+		task.AccountID,
 		1, // did
-		1, // sid
+		task.SessionID,
 	)
 
 	if err != nil {
@@ -79,7 +88,7 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) bool {
 		log.Fatal(err)
 	}
 	log.Print(rowCnt)
-	return true
+	return true, nil
 }
 
 /*

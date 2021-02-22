@@ -14,6 +14,10 @@ type Message struct {
 	Body string `json:"body"`
 }
 
+/*
+CheckConnAndPublish checks websocket connection to see if client is connected.
+Else, the client is disconnected and the websocket connection will be terminated.
+*/
 func (c *Client) CheckConn() {
 	defer func() {
 		c.Pool.Unregister <- c

@@ -65,15 +65,18 @@ func (worker *Worker) StartWorker(
 		go func(threadNum int) {
 			for msg := range msgs {
 				// can put a switch statement here for multiple tasks
-				if worker.Tasks.SendDanceMove(msg) {
+				if ok, err := worker.Tasks.SendDanceMove(msg); ok && err == nil {
 					fmt.Printf("Thread %v: ", threadNum)
 					msg.Ack(false)
-				} else {
+				} else if !ok && err == nil {
 					// negative ACK and requeue message
 					msg.Nack(false, true)
+				} else if err != nil {
+					fmt.Printf("Worker stopped: %v\n", err)
+					break
 				}
 			}
-			fmt.Println("Rabbit consumer closed - critical error")
+			fmt.Println("Rabbit consumer closed - client socket disconnected or amqp error!")
 		}(i)
 	}
 	return nil
