@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/CG4002-2021-B03-Audition/Dashboard/server/entity"
+	handler "github.com/CG4002-2021-B03-Audition/Dashboard/server/handler/moves"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/rabbit"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/tasks"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/ws"
@@ -90,14 +90,6 @@ func main() {
 
 	router := gin.New()
 
-	// add middlewares
-	router.Use(
-		gin.Recovery(),
-		gin.Logger(),
-		// middlewares.BasicAuth(db),
-		middlewares.EnableCORS("http://localhost:3000"),
-	)
-
 	// connect to db
 	dsn := "host=localhost user=root password=password dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Singapore"
 	db, err := sql.Open("postgres", dsn)
@@ -112,6 +104,14 @@ func main() {
 		panic(err)
 	}
 	defer db.Close()
+
+	// add middlewares
+	router.Use(
+		gin.Recovery(),
+		gin.Logger(),
+		// middlewares.BasicAuth(db),
+		middlewares.EnableCORS("http://localhost:3000"),
+	)
 
 	// initialise websocket routes
 	pool := ws.NewPool()
@@ -137,58 +137,9 @@ func main() {
 	})
 
 	// add routes
-	router.GET("/ping", func(c *gin.Context) {
-		rows, err := db.Query("select * from test")
-		if err != nil {
-			panic(err.Error())
-		}
-		defer rows.Close()
-		var (
-			id   int
-			name string
-		)
-		for rows.Next() {
-			err := rows.Scan(&id, &name)
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println(id, name)
-		}
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	router.GET("/ping", handler.GetTestData(db))
 
-	router.GET("/moves", func(c *gin.Context) {
-		params := c.Request.URL.Query()
-		rows, err := db.Query(
-			"select move, delay, accuracy, timestamp from moves where sid = $1 and aid = $2 and did = $3",
-			params["sid"][0],
-			params["aid"][0],
-			params["did"][0],
-		)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": err,
-			})
-		}
-		defer rows.Close()
-		var moves []entity.Move
-		for rows.Next() {
-			var move entity.Move
-			err := rows.Scan(&move.Move, &move.Delay, &move.Accuracy, &move.Timestamp)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-			moves = append(moves, move)
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"success": true,
-			"message": moves,
-		})
-	})
+	router.GET("/moves", handler.GetMovesInSession(db))
 
 	router.GET("/session", func(c *gin.Context) {
 	})
