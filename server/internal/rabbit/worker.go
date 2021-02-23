@@ -1,9 +1,12 @@
 package rabbit
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/tasks"
+	"github.com/streadway/amqp"
 )
 
 type Worker struct {
@@ -65,10 +68,18 @@ func (worker *Worker) StartWorker(
 		go func(threadNum int) {
 			for msg := range msgs {
 				// can put a switch statement here for multiple tasks
-				if ok, err := worker.Tasks.SendDanceMove(msg); ok && err == nil {
+				var isDone bool
+				var err error
+				switch checkMessageType(msg) {
+				case "move":
+					isDone, err = worker.Tasks.SendDanceMove(msg)
+					// case "position":
+					// 	isDone, err = worker.Tasks.SendDancePosition(msg);
+				}
+				if isDone && err == nil {
 					fmt.Printf("Thread %v: ", threadNum)
 					msg.Ack(false)
-				} else if !ok && err == nil {
+				} else if !isDone && err == nil {
 					// negative ACK and requeue message
 					msg.Nack(false, true)
 				} else if err != nil {
@@ -80,4 +91,17 @@ func (worker *Worker) StartWorker(
 		}(i)
 	}
 	return nil
+}
+
+/*
+checkMessageType checks if the message consumed contains move data or position data
+*/
+func checkMessageType(d amqp.Delivery) string {
+	var jsonData map[string]interface{}
+	if err := json.Unmarshal(d.Body, &jsonData); err != nil {
+		log.Fatal(err)
+	}
+	moveType := fmt.Sprintf("%s", jsonData["type"])
+
+	return moveType
 }

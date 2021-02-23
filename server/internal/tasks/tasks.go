@@ -119,6 +119,7 @@ func GenerateMove() []byte {
 
 	// create json string from map and return json string
 	m := map[string]string{
+		"type":      "move",
 		"dancerId":  dancerID,
 		"move":      danceMoves[rand.Intn(8)],
 		"timestamp": datetime,
@@ -149,6 +150,7 @@ func GeneratePosition() []byte {
 	datetime := time.Now().Format("2006-01-02 15:04:05")
 	delay := rand.Float64() * 1.5
 	m := map[string]string{
+		"type":      "position",
 		"position":  dancePosition[rand.Intn(6)],
 		"timestamp": datetime,
 		"syncDelay": fmt.Sprintf("%.1f", delay),
