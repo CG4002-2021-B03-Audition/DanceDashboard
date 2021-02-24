@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	handler "github.com/CG4002-2021-B03-Audition/Dashboard/server/handler/moves"
+	handler "github.com/CG4002-2021-B03-Audition/Dashboard/server/handler"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/rabbit"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/tasks"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/ws"
@@ -139,27 +139,29 @@ func main() {
 	// add routes
 	router.GET("/ping", handler.GetTestData(db))
 
-	router.GET("/moves", handler.GetMovesInSession(db))
+	// router.GET("/moves")
 
-	router.GET("/session", func(c *gin.Context) {
-	})
+	router.GET("/moves/:sid", handler.GetMovesInSession(db))
+	router.GET("/moves", handler.GetAllMoves(db))
 
-	router.GET("/session/:id", func(c *gin.Context) {
-	})
+	router.GET("/sessions", handler.GetAllSessions(db))
 
-	router.POST("/session/:id", func(c *gin.Context) {
-	})
+	// router.GET("/session/:id", func(c *gin.Context) {
+	// })
 
-	go func() {
-		for {
-			time.Sleep(time.Second * 2)
-			data := tasks.GenerateMove()
-			amqpConn.Publish(
-				"move",
-				data,
-			)
-		}
-	}()
+	// router.POST("/session/:id", func(c *gin.Context) {
+	// })
+
+	// go func() {
+	// 	for {
+	// 		time.Sleep(time.Second * 2)
+	// 		data := tasks.GenerateMove()
+	// 		amqpConn.Publish(
+	// 			"move",
+	// 			data,
+	// 		)
+	// 	}
+	// }()
 
 	// For week 7: fake publisher to send dance position info
 	// go func() {

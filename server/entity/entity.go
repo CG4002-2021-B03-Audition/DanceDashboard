@@ -8,3 +8,9 @@ type Move struct {
 	Accuracy  float64   `json:"accuracy"`
 	Timestamp time.Time `json:"timestamp"`
 }
+
+type Session struct {
+	Sid       int       `json:"sid"`
+	Aid       int       `json:"aid"`
+	Timestamp time.Time `json:"timestamp"`
+}
