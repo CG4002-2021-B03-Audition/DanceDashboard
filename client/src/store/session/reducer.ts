@@ -1,34 +1,20 @@
-import { combineReducers } from "redux"
 import * as actionTypes from "./actions"
-import { MoveState, WsActionTypes } from "./types"
+import { SessionState, SessionActionType } from "./types"
 
-const initialState: MoveState = {
-    isConnected: false,
-    moves: []
+const initialState: SessionState = {
+    sessions: []
 }
 
-export function moveReducer(
+export function sessionReducer(
     state = initialState, 
-    action: WsActionTypes
-): MoveState {
+    action: SessionActionType
+): SessionState {
     switch (action.type) {
-        case actionTypes.WS_MOVE_CONNECT:
+        case actionTypes.FETCH_SESSIONS:
             return {
-                ...state,
-                isConnected: action.payload
-            }
-        case actionTypes.WS_MOVE_MESSAGE:
-            return {
-                ...state,
-                moves: [action.payload, ...state.moves]
+                sessions: [...state.sessions, ...action.payload],
             }
         default:
             return state
     }
 }
-
-export const rootReducer = combineReducers({
-    moveStore: moveReducer,
-})
-
-export type RootState = ReturnType<typeof rootReducer>

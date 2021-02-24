@@ -1,5 +1,5 @@
-import store from "./store/session/store";
-import { ws_move_connect, ws_move_message } from "./store/session/actions";
+import store from "./store/store";
+import { ws_move_connect, ws_move_message } from "./store/ws/actions";
 
 class Socket {
     ws: WebSocket | undefined;

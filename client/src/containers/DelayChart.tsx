@@ -1,7 +1,7 @@
 import React from 'react'
 import { ChartOptions } from 'chart.js'
 import { useSelector } from 'react-redux'
-import { Move } from '../store/session/types'
+import { Move } from '../store/ws/types'
 import LineChart from '../components/Charts/LineChart'
 
 const options: ChartOptions = {

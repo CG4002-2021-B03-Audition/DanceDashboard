@@ -1,25 +1,17 @@
-import { WS_MOVE_CONNECT, WS_MOVE_MESSAGE } from "./actions"
+import { FETCH_SESSIONS } from "./actions"
 
-export interface Move {
-    move: string,
-    timestamp: string,
-    accuracy: number,
-    delay: number
+
+export interface SessionActionType {
+    type: typeof FETCH_SESSIONS
+    payload: Session[]
 }
 
-export interface MoveState {
-    isConnected: boolean
-    moves: Move[]
+export interface Session {
+    sid: number
+    aid: number
+    timestamp: Date
 }
 
-interface WsMoveConnect {
-    type: typeof WS_MOVE_CONNECT
-    payload: boolean
+export interface SessionState {
+    sessions: Session[]
 }
-
-interface WsMoveMessage {
-    type: typeof WS_MOVE_MESSAGE
-    payload: Move
-}
-
-export type WsActionTypes = WsMoveConnect | WsMoveMessage
