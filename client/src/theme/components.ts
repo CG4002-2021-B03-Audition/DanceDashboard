@@ -6,6 +6,17 @@ const components = {
                     boxShadow: 'none'
                 }
             }
+        },
+        Badge: {
+            sizes: {
+                ml: {
+                    h: "auto",
+                    fontSize: "sm",
+                    py: "auto",
+                    px: "15px",
+                    rounded: "xl",
+                }
+            }
         }
     }
 }
