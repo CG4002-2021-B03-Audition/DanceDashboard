@@ -2,16 +2,18 @@ import store from "./store/session/store";
 import { ws_move_connect, ws_move_message } from "./store/session/actions";
 
 class Socket {
-    ws: WebSocket;
+    ws: WebSocket | undefined;
     endpoint: string
 
     constructor(endpoint: string) {
-        this.ws = new WebSocket(endpoint)
+        // this.ws = new WebSocket(endpoint)
         this.endpoint = endpoint
     }
 
     connect() {
-        if(this.ws.readyState === WebSocket.CLOSED) {
+        if(this.ws === undefined) {
+            this.ws = new WebSocket(this.endpoint)
+        } else if (this.ws.readyState === WebSocket.CLOSED) {
             this.ws = new WebSocket(this.endpoint)
         }
         this.ws.onopen = () => {
@@ -35,10 +37,12 @@ class Socket {
     }
 
     disconnect() {
-        if(this.ws.readyState === WebSocket.OPEN) {
-            this.ws.close()
-            store.dispatch(ws_move_connect(false))
-            console.log("Disconnected from ws server!")
+        if(this.ws !== undefined) {
+            if(this.ws.readyState === WebSocket.OPEN) {
+                this.ws.close()
+                store.dispatch(ws_move_connect(false))
+                console.log("Disconnected from ws server!")
+            }
         }
     }
 
