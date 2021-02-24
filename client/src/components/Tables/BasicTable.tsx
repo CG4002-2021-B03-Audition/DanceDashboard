@@ -27,14 +27,14 @@ const TableRows: React.FC<RowProps> = ({data}) => (
 const TableHeader: React.FC<HeaderProps> = ({data}) => (
     <Thead>
         <Tr>
-            {data.map(item => <Th>{item}</Th>)}
+            {data.map(item => <Th key={item}>{item}</Th>)}
         </Tr>
     </Thead>
 )
 
 const TableBody: React.FC<BodyProps> = ({data}) => (
     <Tbody>
-        {data.map(item => <TableRows data={item}/>)}
+        {data.map(item => <TableRows key={item[0]} data={item}/>)}
     </Tbody>
 )
 

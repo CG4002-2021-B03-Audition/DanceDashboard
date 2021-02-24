@@ -1,57 +1,19 @@
 import React from 'react';
-import Layout from './components/Layout/Layout';
-import DelayChart from './containers/DelayChart';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import TopBar from './components/Menu/TopBar';
-import { Stack, ButtonGroup, Button, Container } from '@chakra-ui/react';
-import MoveAccuracyChart from './containers/MoveAccuracyChart';
-import { moveSocket } from './socket'
-import MoveTable from './containers/MoveTable';
+import LiveSessionPage from './pages/LiveSessionPage';
+import OfflineSessionPage from './pages/OfflineSessionPage';
 
 const App: React.FC = () => {
-  const handleConnect = () => {
-    moveSocket.connect()
-  }
-
-  const handleDisconnect = () => {
-    moveSocket.disconnect()
-  }
+  
   return (
-      <Layout>
+      <Router>
         <TopBar/>
-        <Container centerContent>
-          <ButtonGroup>
-              <Button onClick={handleConnect}>Start dance session!</Button>
-              <Button onClick={handleDisconnect}>Stop dance session!</Button>
-          </ButtonGroup>
-        </Container>
-        <Stack isInline={true}
-          centerContent 
-          border="1px" 
-          borderColor="gray.100" 
-          rounded="md" 
-          m={8} 
-          p ={4}
-        >
-          <Container centerContent>
-            <DelayChart/>
-          </Container>
-          <Container centerContent >
-              <MoveAccuracyChart/>
-          </Container>
-        </Stack>
-        <Stack isInline={true}
-          centerContent 
-          border="1px" 
-          borderColor="gray.100" 
-          rounded="md" 
-          m={8} 
-          p ={4}
-        >
-          <Container centerContent>
-            <MoveTable/>
-          </Container>
-        </Stack>
-      </Layout>
+        <Route path="/" exact component={LiveSessionPage} />
+        <Route path="/live" component={LiveSessionPage} />
+        <Route path="/stats" component={OfflineSessionPage} />
+      </Router>
+      
   );
 }
 
