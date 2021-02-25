@@ -214,7 +214,7 @@ func GenerateDanceData() []map[string]interface{} {
 			position := map[string]interface{}{
 				"type":      "position",
 				"dancerId":  dancerID,
-				"move":      dancePosition[rand.Intn(6)],
+				"position":  dancePosition[rand.Intn(6)],
 				"syncDelay": fmt.Sprintf("%.1f", delay),
 			}
 			res = append(res, position)
