@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 interface Props {}
 
 const getConnectionStatus = (state: any) => { 
-    return state.moveStore.isConnected
+    return state.liveStore.isConnected
 }
 
 const TopBar: React.FC<Props> = () => {

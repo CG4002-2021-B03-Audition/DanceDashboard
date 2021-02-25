@@ -18,7 +18,7 @@ const options: ChartOptions = {
 }
 
 const selectMoves = (state: any) => { 
-    return state.moveStore
+    return state.liveStore
 }
 
 const DelayChart = () => {

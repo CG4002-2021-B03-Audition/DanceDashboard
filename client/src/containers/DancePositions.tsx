@@ -15,7 +15,7 @@ interface Positions {
 }
 
 const getPositions = (state: any) => {
-    return state.moveStore.positions.slice(-1)
+    return state.liveStore.positions.slice(-1)
 }
 
 const DancePositions: React.FC = () => {
@@ -29,7 +29,6 @@ const DancePositions: React.FC = () => {
 
     const positionOrder = (obj : Position) => {
         if (!obj) {
-            console.log("Positions is undefined!!")
             let positionsList = ["1", "2", "3"]
             return positionsList.map((pos: string) => mappings[pos])
         }

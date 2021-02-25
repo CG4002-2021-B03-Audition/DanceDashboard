@@ -12,7 +12,6 @@ interface Props {
 
 
 const DoughnutChart: React.FC<Props> = (props) => {
-    console.log(props)
     return (
         <>
             <div className='header'>

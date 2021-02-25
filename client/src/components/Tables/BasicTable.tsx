@@ -39,7 +39,6 @@ const TableBody: React.FC<BodyProps> = ({data}) => (
 )
 
 const BasicTable: React.FC<Props> = (props) => {
-    console.log(props)
     return (
         <Table size="sm" variant="striped" colorScheme="purple">
             <TableHeader data={props.headers}/>

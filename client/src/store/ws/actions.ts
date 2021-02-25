@@ -14,12 +14,12 @@ export const ws_move_message = (data: any): WsActionTypes => {
     let move = data.move
     let timestamp = data.timestamp
     let delay = parseFloat(data.syncDelay)
-    let accuracy = parseFloat(data.accuracy)
+    let accuracy = parseFloat(data.accuracy) * 100
     let moveData = {
         move: move,
         timestamp: timestamp,
         delay: delay,
-        accuracy: accuracy,
+        accuracy: accuracy.toString(),
     }
     return {
         type:  WS_MOVE_MESSAGE,

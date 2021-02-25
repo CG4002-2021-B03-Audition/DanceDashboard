@@ -22,7 +22,7 @@ const options: ChartOptions = {
 }
 
 const selectMoves = (state: any) => { 
-    return state.moveStore.moves
+    return state.liveStore.moves
 }
 
 const MoveAccuracyChart = () => {
@@ -30,13 +30,13 @@ const MoveAccuracyChart = () => {
 
     const lastMoveData = (moveData.length !== 0) ? moveData.slice(-1)[0] : undefined
     const currentMove = (lastMoveData !== undefined) ? lastMoveData.move : "-"
-    const currentMoveLabel = (lastMoveData !== undefined) ? [parseFloat(lastMoveData.accuracy) * 100] : []
-    const currentMoveAcc = (lastMoveData !== undefined) ? [lastMoveData.accuracy, 1-lastMoveData.accuracy] : [] 
+    const currentMoveLabel = (lastMoveData !== undefined) ? [lastMoveData.accuracy + "%"] : []
+    const currentMoveAcc = (lastMoveData !== undefined) ? [lastMoveData.accuracy, 100-lastMoveData.accuracy] : [] 
     return (
         <>  
-            <DoughnutChart 
+            <DoughnutChart
                 chartTitle={"Move Accuracy (" + currentMove + ")"}
-                legendLabels={currentMoveLabel.map(el => el.toString() + "%")}
+                legendLabels={currentMoveLabel}
                 values={currentMoveAcc}
                 options={options}
             />

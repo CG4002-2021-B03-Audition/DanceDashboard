@@ -6,7 +6,6 @@ interface Props {
 }
 
 const Button: React.FC<Props> = ({children}) => {
-    console.log(children)
     return (
         <Box 
           boxShadow="base"

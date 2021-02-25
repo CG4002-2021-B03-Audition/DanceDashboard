@@ -8,7 +8,7 @@ import thunkMiddleware from 'redux-thunk';
 // type RootState = ReturnType<typeof rootReducer>
 
 const rootReducer = combineReducers({
-    moveStore: wsReducer,
+    liveStore: wsReducer,
     sessionStore: sessionReducer,
 })
 
