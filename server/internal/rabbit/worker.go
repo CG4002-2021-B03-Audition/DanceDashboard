@@ -73,8 +73,8 @@ func (worker *Worker) StartWorker(
 				switch checkMessageType(msg) {
 				case "move":
 					isDone, err = worker.Tasks.SendDanceMove(msg)
-					// case "position":
-					// 	isDone, err = worker.Tasks.SendDancePosition(msg);
+				case "position":
+					isDone, err = worker.Tasks.SendDancePosition(msg)
 				}
 				if isDone && err == nil {
 					fmt.Printf("Thread %v: ", threadNum)
