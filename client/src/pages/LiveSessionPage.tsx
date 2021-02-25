@@ -5,6 +5,7 @@ import { Stack, ButtonGroup, Button, Container } from '@chakra-ui/react';
 import MoveAccuracyChart from '../containers/MoveAccuracyChart';
 import { moveSocket } from '../socket'
 import MoveTable from '../containers/MoveTable';
+import DancePositions from '../containers/DancePositions';
 
 const LiveSessionPage: React.FC = () => {
     const handleConnect = () => {
@@ -23,26 +24,29 @@ const LiveSessionPage: React.FC = () => {
                 </ButtonGroup>
             </Container>
             <Stack isInline={true} 
-            border="1px" 
-            borderColor="gray.100" 
-            rounded="md" 
-            m={8} 
-            p ={4}
-            >
-                <Container centerContent>
-                    <DelayChart/>
+                border="1px" 
+                borderColor="gray.100" 
+                rounded="md" 
+                m={8} 
+                p ={4}
+            >   
+                <Container centerContent >
+                    <DancePositions/>
                 </Container>
                 <Container centerContent >
                     <MoveAccuracyChart/>
                 </Container>
             </Stack>
             <Stack isInline={true} 
-            border="1px" 
-            borderColor="gray.100" 
-            rounded="md" 
-            m={8} 
-            p ={4}
+                border="1px" 
+                borderColor="gray.100" 
+                rounded="md" 
+                m={8} 
+                p ={4}
             >
+                <Container centerContent>
+                    <DelayChart/>
+                </Container>
                 <Container centerContent>
                     <MoveTable/>
                 </Container>
