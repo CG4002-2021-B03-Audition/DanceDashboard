@@ -1,15 +1,16 @@
 import * as actionTypes from "./actions"
-import { MoveState, WsActionTypes } from "./types"
+import { WsState, WsActionTypes } from "./types"
 
-const initialState: MoveState = {
+const initialState: WsState = {
     isConnected: false,
-    moves: []
+    moves: [],
+    positions: [],
 }
 
 export function wsReducer(
     state = initialState, 
     action: WsActionTypes
-): MoveState {
+): WsState {
     switch (action.type) {
         case actionTypes.WS_MOVE_CONNECT:
             return {
@@ -19,7 +20,12 @@ export function wsReducer(
         case actionTypes.WS_MOVE_MESSAGE:
             return {
                 ...state,
-                moves: [action.payload, ...state.moves]
+                moves: [...state.moves, action.payload]
+            }
+        case actionTypes.WS_POS_MESSAGE:
+            return {
+                ...state,
+                positions: [...state.positions, action.payload]
             }
         default:
             return state

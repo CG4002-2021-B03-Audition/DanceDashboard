@@ -1,5 +1,5 @@
 import store from "./store/store";
-import { ws_move_connect, ws_move_message } from "./store/ws/actions";
+import { ws_move_connect, ws_move_message, ws_pos_message } from "./store/ws/actions";
 
 class Socket {
     ws: WebSocket | undefined;
@@ -23,7 +23,13 @@ class Socket {
         this.ws.onmessage = msg => {
             // dispatch action to update state whenever socket receives a message
             let obj = JSON.parse(msg.data)
-            store.dispatch(ws_move_message(obj))
+            let data = JSON.parse(obj.body)
+            let type = data.type 
+            if (type === "move") {
+                store.dispatch(ws_move_message(data))
+            } else if (type === "position") {
+                store.dispatch(ws_pos_message(data))
+            }
             console.log(msg);
         }
         this.ws.onclose = event => {
