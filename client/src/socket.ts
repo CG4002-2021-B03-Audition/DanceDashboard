@@ -29,8 +29,9 @@ class Socket {
                 store.dispatch(ws_move_message(data))
             } else if (type === "position") {
                 store.dispatch(ws_pos_message(data))
+                console.log(msg);
             }
-            console.log(msg);
+            
         }
         this.ws.onclose = event => {
             store.dispatch(ws_move_connect(false))

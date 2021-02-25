@@ -24,7 +24,7 @@ interface WsMoveMessage {
 }
 
 export interface Position {
-    position: string[]
+    position: string
     timestamp: string
     delay: number
 }
