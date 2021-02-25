@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import BasicTable from '../components/Tables/BasicTable';
-import { Move, Position } from '../store/ws/types';
+import { WsObj, sortByTimeStampNewest } from '../utils';
 
 const selectMoves = (state: any) => { 
     return state.liveStore.moves
@@ -11,20 +11,12 @@ const selectPositions = (state: any) => {
     return state.liveStore.positions
 }
 
-type WsObj = Move | Position
-
-const sortByTimeStamp = (item1 : WsObj, item2 : WsObj) => {
-    let t1 = new Date(item1.timestamp)
-    let t2 = new Date(item2.timestamp)
-    return (t1 < t2) ? 1 : -1
-}
-
 const MoveTable = () => {
     const wsMoves = useSelector(selectMoves)
     const wsPositions = useSelector(selectPositions)
     const currentTime = new Date()
     const wsData : WsObj[] = [...wsMoves, ...wsPositions]
-    const formatData = wsData.sort(sortByTimeStamp).map((obj : WsObj) => {
+    const formatData = wsData.sort(sortByTimeStampNewest).map((obj : WsObj) => {
         let timeStamp = new Date(obj.timestamp)
 
         // convert time difference to seconds 

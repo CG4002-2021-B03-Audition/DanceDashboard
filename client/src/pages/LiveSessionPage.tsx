@@ -44,8 +44,8 @@ const LiveSessionPage: React.FC = () => {
                 m={8} 
                 p ={4}
             >
-                <Container centerContent>
-                    <DelayChart/>
+                <Container>
+                    <DelayChart/>   
                 </Container>
                 <Container centerContent>
                     <MoveTable/>

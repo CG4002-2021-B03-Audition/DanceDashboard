@@ -1,8 +1,10 @@
 import React from 'react'
 import { ChartOptions } from 'chart.js'
 import { useSelector } from 'react-redux'
-import { Move } from '../store/ws/types'
+import { Move, Position } from '../store/ws/types'
 import LineChart from '../components/Charts/LineChart'
+import { sortByTimeStampOldest } from '../utils';
+import { Badge, Flex, Spacer, Stack } from '@chakra-ui/react'
 
 const options: ChartOptions = {
   scales: {
@@ -18,23 +20,37 @@ const options: ChartOptions = {
 }
 
 const selectMoves = (state: any) => { 
-    return state.liveStore
+    return state.liveStore.moves.map((item : Move) => {
+      return {name: item.move, delay: item.delay, timestamp: item.timestamp}
+    })
+}
+
+const selectPositions = (state: any) => { 
+    return state.liveStore.positions.map((item : Position) => {
+      return {name: item.position, delay: item.delay, timestamp: item.timestamp}
+    })
 }
 
 const DelayChart = () => {
     const moveData = useSelector(selectMoves)
-
+    const positionData = useSelector(selectPositions)
+    const combineData = [...moveData, ...positionData].sort(sortByTimeStampOldest)
     return (
-        <>
-            <LineChart 
-                options={options} 
-                xAxis={moveData.moves.slice(-5, -1).map((el: Move) => el.move)} 
-                yAxis={moveData.moves.slice(-5, -1).map((el: Move) => el.delay)}
-                xLabel="Moves"
-                yLabel="Delay (ms)"
-                chartTitle="Avg Team Delay (ms)"
-            />
-        </>
+        <Stack>
+          <LineChart 
+              options={options} 
+              xAxis={combineData.slice(-5).map((el: any) => el.name)} 
+              yAxis={combineData.slice(-5).map((el: any) => el.delay)}
+              xLabel="Moves"
+              yLabel="Delay (ms)"
+              chartTitle="Avg Team Delay (ms)"
+          />
+          <Flex>
+            <Badge colorScheme="purple">Latest</Badge>
+            <Spacer/>
+            <Badge colorScheme="purple">Newest</Badge>
+          </Flex>
+        </Stack>
     )
 }
 
