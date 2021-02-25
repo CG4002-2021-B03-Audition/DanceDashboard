@@ -28,8 +28,8 @@ const DelayChart = () => {
         <>
             <LineChart 
                 options={options} 
-                xAxis={moveData.moves.slice(0, 4).map((el: Move) => el.move)} 
-                yAxis={moveData.moves.slice(0, 4).map((el: Move) => el.delay)}
+                xAxis={moveData.moves.slice(-5, -1).map((el: Move) => el.move)} 
+                yAxis={moveData.moves.slice(-5, -1).map((el: Move) => el.delay)}
                 xLabel="Moves"
                 yLabel="Delay (ms)"
                 chartTitle="Avg Team Delay (ms)"

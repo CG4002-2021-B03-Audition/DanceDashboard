@@ -34,7 +34,7 @@ const TableHeader: React.FC<HeaderProps> = ({data}) => (
 
 const TableBody: React.FC<BodyProps> = ({data}) => (
     <Tbody>
-        {data.map(item => <TableRows key={item[0]} data={item}/>)}
+        {data.map(item => <TableRows key={item[1]} data={item}/>)}
     </Tbody>
 )
 

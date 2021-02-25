@@ -22,14 +22,16 @@ const options: ChartOptions = {
 }
 
 const selectMoves = (state: any) => { 
-    return state.moveStore
+    return state.moveStore.moves
 }
 
 const MoveAccuracyChart = () => {
     const moveData = useSelector(selectMoves)
-    const currentMoveLabel = (moveData.moves.length !== 0) ? [parseFloat(moveData.moves[0].accuracy) * 100] : []
-    const currentMove = (moveData.moves.length !== 0) ? moveData.moves[0].move : "-"
-    const currentMoveAcc = (moveData.moves.length !== 0) ? [moveData.moves[0].accuracy, 1-moveData.moves[0].accuracy] : [] 
+
+    const lastMoveData = (moveData.length !== 0) ? moveData.slice(-1)[0] : undefined
+    const currentMove = (lastMoveData !== undefined) ? lastMoveData.move : "-"
+    const currentMoveLabel = (lastMoveData !== undefined) ? [parseFloat(lastMoveData.accuracy) * 100] : []
+    const currentMoveAcc = (lastMoveData !== undefined) ? [lastMoveData.accuracy, 1-lastMoveData.accuracy] : [] 
     return (
         <>  
             <DoughnutChart 
