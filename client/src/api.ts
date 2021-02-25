@@ -1,6 +1,6 @@
 const BASE_URL = process.env.REACT_APP_API || "http://localhost:8080";
 
-export default {
+export const api = {
     baseUrl: BASE_URL,
     getAllSessions: `${BASE_URL}/sessions`,
     getAllMoves: `${BASE_URL}/moves`,

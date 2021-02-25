@@ -1,4 +1,4 @@
-import { WS_MOVE_CONNECT, WS_MOVE_MESSAGE, WS_POS_MESSAGE } from "./actions"
+import { WS_MOVE_CONNECT, WS_MOVE_MESSAGE, WS_NEXT_ACTUAL, WS_POS_MESSAGE } from "./actions"
 
 export interface Move {
     move: string
@@ -9,6 +9,8 @@ export interface Move {
 
 export interface WsState {
     isConnected: boolean
+    actualMoves: string[]
+    actualMoveIndex: number
     moves: Move[]
     positions: Position[]
 }
@@ -34,4 +36,9 @@ interface WsPosMessage {
     payload: Position
 }
 
-export type WsActionTypes = WsMoveConnect | WsMoveMessage | WsPosMessage
+interface WsNextActual {
+    type: typeof WS_NEXT_ACTUAL
+    payload: number
+}
+
+export type WsActionTypes = WsMoveConnect | WsMoveMessage | WsPosMessage | WsNextActual

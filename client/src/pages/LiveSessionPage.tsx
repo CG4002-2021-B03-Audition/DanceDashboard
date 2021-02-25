@@ -6,6 +6,7 @@ import MoveAccuracyChart from '../containers/MoveAccuracyChart';
 import { moveSocket } from '../socket'
 import MoveTable from '../containers/MoveTable';
 import DancePositions from '../containers/DancePositions';
+import MovePredictionChart from '../containers/MovePredictionChart';
 
 const LiveSessionPage: React.FC = () => {
     const handleConnect = () => {
@@ -24,17 +25,23 @@ const LiveSessionPage: React.FC = () => {
                 </ButtonGroup>
             </Container>
             <Stack isInline={true} 
-                border="1px" 
-                borderColor="gray.100" 
-                rounded="md" 
                 m={8} 
                 p ={4}
             >   
-                <Container centerContent >
+                <Container 
+                    border="1px" 
+                    borderColor="gray.100" 
+                    rounded="md" 
+                    centerContent 
+                    bgGradient="linear(purple.200 0%, white 70%)"
+                >
                     <DancePositions/>
                 </Container>
-                <Container centerContent >
-                    <MoveAccuracyChart/>
+                <Container 
+                    centerContent  
+                >
+                    {/* <MoveAccuracyChart/> */}
+                    <MovePredictionChart/>
                 </Container>
             </Stack>
             <Stack isInline={true} 

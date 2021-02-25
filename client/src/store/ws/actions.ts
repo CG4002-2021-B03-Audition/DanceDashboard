@@ -2,6 +2,7 @@ import { WsActionTypes } from "./types"
 export const WS_MOVE_CONNECT = 'WS_CONNECT'
 export const WS_MOVE_MESSAGE = 'WS_MOVE_MESSAGE'
 export const WS_POS_MESSAGE = 'WS_POS_MESSAGE'
+export const WS_NEXT_ACTUAL = 'WS_NEXT_ACTUAL'
 
 export const ws_move_connect = (data : boolean): WsActionTypes => {
     return {
