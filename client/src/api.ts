@@ -5,4 +5,5 @@ export const api = {
     getAllSessions: `${BASE_URL}/sessions`,
     getAllMoves: `${BASE_URL}/moves`,
     getMovesInSession: (sid: number) => `${BASE_URL}/moves/${sid}`,
+    getMoveBreakdown: (sid: number) => `${BASE_URL}/breakdown/${sid}`,
 }

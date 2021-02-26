@@ -25,7 +25,12 @@ const fetchMovesInSession = async (sid : number, move : string | undefined) => {
     return await axios.get(api.getMovesInSession(sid) + `?aid=1&did=1`)
 }
 
+const fetchMoveBreakdown = async (sid : number) => {
+    return await axios.get(api.getMoveBreakdown(sid))
+}
+
 export {
     fetchAllSessions,
     fetchMovesInSession,
+    fetchMoveBreakdown,
 }

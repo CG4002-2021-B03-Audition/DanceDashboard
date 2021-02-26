@@ -8,7 +8,7 @@ import { WsObj, sortByTimeStampNewest } from '../utils';
 interface Props {
     session : Session | undefined
 }
-const OfflineDanceData: React.FC<Props> = ({session}) => {
+const OfflineDanceData: React.FC<Props> = ({ session }) => {
     const [danceData, setDanceData] = useState([])
     const [move, setMove] = useState()
 
