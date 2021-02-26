@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -75,6 +76,50 @@ func GetMovesInSession(db *sql.DB) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
 			"message": moves,
+		})
+	}
+	return gin.HandlerFunc(fn)
+}
+
+/*
+GetMovesBreakdown returns the breakdown of all moves
+*/
+func GetMovesBreakdown(db *sql.DB) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+		sid := c.Param("sid")
+		var queryString string
+		var rows *sql.Rows
+		var err error
+
+		queryString = `
+			select move, count(*) from moves group by move, sid having sid = $1;
+		`
+		rows, err = db.Query(
+			queryString,
+			sid,
+		)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": err,
+			})
+		}
+		defer rows.Close()
+		res := make([][]string, 0)
+		for rows.Next() {
+			row := make([]string, 2)
+			err := rows.Scan(&row[0], &row[1])
+
+			if err != nil {
+				log.Fatal(err)
+			}
+			res = append(res, row)
+		}
+		fmt.Println(rows)
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": res,
 		})
 	}
 	return gin.HandlerFunc(fn)
