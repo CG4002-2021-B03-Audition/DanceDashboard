@@ -1,9 +1,14 @@
-import { FETCH_SESSIONS } from "./actions"
+import { FETCH_SESSIONS, SEARCH_TEXT } from "./actions"
 
 
-export interface SessionActionType {
+export interface SessionFetchType {
     type: typeof FETCH_SESSIONS
     payload: Session[]
+}
+
+export interface SearchTextType {
+    type: typeof SEARCH_TEXT
+    payload: string
 }
 
 export interface Session {
@@ -13,5 +18,8 @@ export interface Session {
 }
 
 export interface SessionState {
+    searchText: string
     sessions: Session[]
 }
+
+export type SessionActionType = SessionFetchType | SearchTextType
