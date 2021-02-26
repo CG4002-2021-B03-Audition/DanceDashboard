@@ -54,7 +54,7 @@ const LiveSessionPage: React.FC = () => {
                 <Container>
                     <DelayChart/>   
                 </Container>
-                <Container centerContent>
+                <Container h={96} overflowY="scroll" centerContent>
                     <MoveTable/>
                 </Container>
             </Stack>
