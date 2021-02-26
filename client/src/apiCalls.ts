@@ -16,6 +16,16 @@ const fetchAllSessions = async (data? : any) => {
     return resp
 }
 
+// getMovesInSession: (sid: number) => `${BASE_URL}/moves/${sid}`,
+
+const fetchMovesInSession = async (sid : number, move : string | undefined) => {
+    if (move !== undefined) {
+        return await axios.get(api.getMovesInSession(sid) + `?aid=1&did=1&move=${move}`)
+    } 
+    return await axios.get(api.getMovesInSession(sid) + `?aid=1&did=1`)
+}
+
 export {
     fetchAllSessions,
+    fetchMovesInSession,
 }
