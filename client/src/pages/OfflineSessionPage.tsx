@@ -48,14 +48,14 @@ const OfflineSessionPage: React.FC = () => {
             <GridItem m={2} rowSpan={2} colSpan={1}>
                 <SessionsTable onClick={handleSessionSelect}/>
             </GridItem>
-            <GridItem m={2} colSpan={2}>
-                <OfflineDanceData danceData={danceData}/>
+            <GridItem colSpan={2}>
+                <SessionScoreChart danceData={danceData}/>
             </GridItem>
             <GridItem colSpan={2}>
                 <OfflineMoveBreakdown session={session} />
             </GridItem>
             <GridItem colSpan={4}>
-                <SessionScoreChart session={session}/>
+                <OfflineDanceData danceData={danceData}/>
             </GridItem>
         </Grid>
     )
