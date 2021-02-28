@@ -2,6 +2,7 @@ import { Grid, GridItem } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchDataInSession } from '../apiCalls';
+import ExtraStatChart from '../containers/ExtraStatChart';
 import OfflineDanceData from '../containers/OfflineDanceData';
 import OfflineMoveBreakdown from '../containers/OfflineMoveBreakdown';
 import SessionScoreChart from '../containers/SessionScoreChart';
@@ -54,7 +55,10 @@ const OfflineSessionPage: React.FC = () => {
             <GridItem colSpan={2}>
                 <OfflineMoveBreakdown session={session} />
             </GridItem>
-            <GridItem colSpan={4}>
+            <GridItem colSpan={2}>
+                <ExtraStatChart danceData={danceData}/>
+            </GridItem>
+            <GridItem colSpan={2}>
                 <OfflineDanceData danceData={danceData}/>
             </GridItem>
         </Grid>

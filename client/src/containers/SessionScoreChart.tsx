@@ -2,6 +2,7 @@ import { QuestionOutlineIcon } from '@chakra-ui/icons';
 import { CircularProgress, CircularProgressLabel, Container, Divider, Stack, Text, Tooltip } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { getProgressColor } from '../utils';
 
 interface Props {
     danceData : never[]
@@ -42,12 +43,12 @@ const SessionScoreChart: React.FC<Props> = ({ danceData }) => {
             </Stack>
             <Divider orientation="horizontal" mt={4} mb={4}/>
             <Container centerContent>
-                <CircularProgress value={calculateScore()} size={72} color="green.400">
+                <CircularProgress value={calculateScore()} size={72} color={getProgressColor(calculateScore())}>
                     <CircularProgressLabel>
                         <Text>
                             {`${scores[0]} / ${scores[1]}`}
                         </Text>
-                        <Text>
+                        <Text fontWeight="bold">
                             moves were correct!
                         </Text>
                     </CircularProgressLabel>
