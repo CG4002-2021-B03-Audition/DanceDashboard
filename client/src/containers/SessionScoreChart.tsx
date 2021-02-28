@@ -49,7 +49,7 @@ const SessionScoreChart: React.FC<Props> = ({ danceData }) => {
                             {`${scores[0]} / ${scores[1]}`}
                         </Text>
                         <Text fontWeight="bold">
-                            moves were correct!
+                            actions were correct!
                         </Text>
                     </CircularProgressLabel>
                 </CircularProgress>

@@ -7,6 +7,13 @@ const components = {
                 }
             }
         },
+        Switch: {
+            baseStyle: {
+                _focus: {
+                    boxShadow: 'none'
+                },
+            }
+        },
         Badge: {
             sizes: {
                 ml: {

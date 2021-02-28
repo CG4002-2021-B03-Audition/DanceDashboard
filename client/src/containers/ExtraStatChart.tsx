@@ -1,4 +1,4 @@
-import { CircularProgress, CircularProgressLabel, Container, Stack, Text } from '@chakra-ui/react';
+import { CircularProgress, CircularProgressLabel, Stack, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { getProgressColor } from '../utils';
 
