@@ -23,7 +23,7 @@ const OfflineSessionPage: React.FC = () => {
             h="200px"
             templateRows="repeat(2, 1fr)"
             templateColumns="repeat(5, 1fr)"
-            gap={4}
+            gap={1}
         >
             <GridItem m={2} rowSpan={2} colSpan={1}>
                 <SessionsTable onClick={handleSessionSelect}/>

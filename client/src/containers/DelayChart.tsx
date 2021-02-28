@@ -43,7 +43,8 @@ const DelayChart = () => {
               yAxis={combineData.slice(-5).map((el: any) => el.delay)}
               xLabel="Moves"
               yLabel="Delay (ms)"
-              chartTitle="Avg Team Delay (ms)"
+              chartTitle="Team Delay (ms)"
+              info="Displays the average team delay of every move performed."
           />
           <Flex>
             <Badge colorScheme="purple">Latest</Badge>

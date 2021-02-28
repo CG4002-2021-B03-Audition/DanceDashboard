@@ -1,9 +1,10 @@
-import { Container } from '@chakra-ui/react';
+import { QuestionOutlineIcon } from '@chakra-ui/icons';
+import { Container, Divider, Stack, Text, Tooltip } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { fetchMovesInSession } from '../apiCalls';
+import { fetchDataInSession } from '../apiCalls';
 import BasicTable from '../components/Tables/BasicTable';
 import { Session } from '../store/session/types';
-import { WsObj, sortByTimeStampNewest } from '../utils';
+import { sortByTimeStampOldest } from '../utils';
 
 interface Props {
     session : Session | undefined
@@ -14,7 +15,7 @@ const OfflineDanceData: React.FC<Props> = ({ session }) => {
 
     useEffect(() => {
         async function getDanceData(sid : number) {
-            const resp = await fetchMovesInSession(sid, move)
+            const resp = await fetchDataInSession(sid)
             if (resp.data.success && resp.data.message !== null) {
                 setDanceData(resp.data.message)
             } else if (resp.data.success && resp.data.message === null) {
@@ -27,21 +28,28 @@ const OfflineDanceData: React.FC<Props> = ({ session }) => {
             getDanceData(session.sid)
         }
     }, [session, move])
-    const formatData = danceData.sort(sortByTimeStampNewest).map((obj : any) => {
+    const formatData = danceData.sort(sortByTimeStampOldest).map((obj : any) => {
         let formatObj = {
-            move: obj.move, 
+            move: obj.name, 
             timestamp: obj.timestamp, 
             delay: obj.delay,
-            accuracy: ("move" in obj) ? obj.accuracy * 100 + "%" : "-",
+            accuracy: (obj.accuracy >= 0) ? obj.accuracy * 100 + "%" : "-",
         }
         return formatObj
     })
     const rows : string[][] = formatData.map((row : any) => Object.values(row))
     return (
         <Container
-            overflowY="scroll"
+            overflowY="auto"
             h="24rem"
         >
+            <Stack isInline={true} align="center" justify="center">
+              <Text fontSize="2xl" textAlign="center">Session Data</Text>
+              <Tooltip label="Displays the statistics of all moves and position changes during the session!">
+                <QuestionOutlineIcon/>
+              </Tooltip>
+            </Stack>
+            <Divider orientation="horizontal" m={2}/>
             <BasicTable 
                 headers={["move / position", "timestamp", "delay (ms)", "accuracy"]} 
                 rowData={rows}

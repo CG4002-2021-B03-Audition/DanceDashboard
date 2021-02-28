@@ -1,7 +1,8 @@
 import React from 'react'
 import { Doughnut } from 'react-chartjs-2'
-import { Text } from '@chakra-ui/react'
+import { Divider, Stack, Text, Tooltip } from '@chakra-ui/react'
 import { ChartOptions } from 'chart.js'
+import { QuestionOutlineIcon } from '@chakra-ui/icons'
 
 interface Props {
     legendLabels: string[]
@@ -14,9 +15,13 @@ interface Props {
 const DoughnutChart: React.FC<Props> = (props) => {
     return (
         <>
-            <div className='header'>
-              <Text fontSize="2xl">{props.chartTitle}</Text>
-            </div>
+            <Stack isInline={true} align="center" justify="center">
+              <Text fontSize="2xl" textAlign="center">{props.chartTitle}</Text>
+              <Tooltip label="Displays how many times each move was performed during the session.">
+                <QuestionOutlineIcon/>
+              </Tooltip>
+            </Stack>
+            <Divider orientation="horizontal" mt={4} mb={4}/>
             <Doughnut 
                 data={{
                   labels: props.legendLabels,
@@ -24,8 +29,14 @@ const DoughnutChart: React.FC<Props> = (props) => {
                     {
                       data: props.values,
                       backgroundColor: [
-                        'rgb(128, 90, 213)',
-                        'rgb(211,211,211)'
+                        '#D0D4F9',
+                        '#7A70E2',
+                        '#C4B4FC',
+                        '#9ABFF6',
+                        '#DAD7F6',
+                        '#C4D1FE',
+                        '#9281AE',
+                        '#9D67A3',
                       ],
                       hoverBackgroundColor:'rgba(128, 90, 213, 0.2)',
                     }

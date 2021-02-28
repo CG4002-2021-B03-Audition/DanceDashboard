@@ -1,7 +1,8 @@
 import React from 'react'
 import { Line } from 'react-chartjs-2'
 import { ChartOptions } from 'chart.js'
-import { Text } from '@chakra-ui/react'
+import { Divider, Stack, Text, Tooltip } from '@chakra-ui/react'
+import { QuestionOutlineIcon } from '@chakra-ui/icons'
 
 interface Props {
     options: ChartOptions
@@ -10,14 +11,19 @@ interface Props {
     xLabel: string | undefined
     yLabel: string | undefined
     chartTitle: string | undefined
+    info?: string | undefined
 }
 
 const LineChart: React.FC<Props> = (props) => {
     return (
         <>
-            <div className='header'>
-            <Text fontSize="2xl">{props.chartTitle}</Text>
-            </div>
+            <Stack isInline={true} align="center" justify="center">
+                <Text fontSize="2xl" textAlign="center">{props.chartTitle}</Text>
+                <Tooltip label={props.info}>
+                    <QuestionOutlineIcon/>
+                </Tooltip>
+            </Stack>
+            <Divider orientation="horizontal" m={4}/>
             <Line 
                 data={{
                     labels: props.xAxis,

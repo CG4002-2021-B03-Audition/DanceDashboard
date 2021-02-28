@@ -58,7 +58,7 @@ const SessionsTable: React.FC<Props> = ({ onClick }) => {
             </Container>
             <Container 
                 centerContent
-                overflowY="scroll"
+                overflowY="auto"
                 h="48rem"
             >
                 {(rows.length === 0) ? "No sessions found!" : rows}

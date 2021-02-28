@@ -1,12 +1,32 @@
-import { Container, Text } from '@chakra-ui/react';
+import { Container } from '@chakra-ui/react';
+import { ChartOptions } from 'chart.js';
 import React, { useEffect, useState } from 'react';
 import { fetchMoveBreakdown } from '../apiCalls';
+import DoughnutChart from '../components/Charts/DoughnutChart';
 import PolarChart from '../components/Charts/PolarChart';
 import { Session } from '../store/session/types';
 
 interface Props {
     session : Session | undefined
 }
+
+const options: ChartOptions = {
+    layout: {
+      padding: {
+        
+      }
+    },
+    legend: {
+      display: true,
+      position: "right"
+    },
+    elements: {
+      arc: {
+        borderWidth: 0,
+      }
+    },
+    cutoutPercentage: 60,
+  }
 
 const OfflineMoveBreakdown: React.FC<Props> = ({ session }) => {
     const [ data, setData ] = useState<number[]>([])
@@ -24,9 +44,11 @@ const OfflineMoveBreakdown: React.FC<Props> = ({ session }) => {
         if (session !== undefined) { getMoveBreakdown(session.sid) }
     }, [session])
     return (
-        <Container>
-            <Text fontSize="lg" textAlign="center">Move Breakdown</Text>
-            <PolarChart data={data} labels={labels} />
+        <Container
+          centerContent
+        >
+            {/* <PolarChart chartTitle="Move Breakdown" data={data} labels={labels} /> */}
+            <DoughnutChart chartTitle="Move Breakdown" values={data} legendLabels={labels} options={options}/>
         </Container>
     )
 }

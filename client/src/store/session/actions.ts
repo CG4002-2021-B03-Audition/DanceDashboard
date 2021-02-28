@@ -5,9 +5,13 @@ export const SEARCH_TEXT = 'SEARCH_TEXT'
 
 export async function fetchSessions(dispatch : any, getState : any) {
     const response = await fetchAllSessions()
+    let data : string[] = []
+    if (response.data.message !== null ) {
+        data = response.data.message
+    }
     dispatch({
         type: FETCH_SESSIONS,
-        payload: response.data.message,
+        payload: data,
     })
 }
 
