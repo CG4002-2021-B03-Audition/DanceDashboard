@@ -21,39 +21,26 @@ params {
 	move?
 }
 */
-func GetMovesInSession(db *sql.DB) gin.HandlerFunc {
+func GetDataInSession(db *sql.DB) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		sid := c.Param("sid")
 		params := c.Request.URL.Query()
-		move, ok := params["move"]
 		var queryString string
 		var rows *sql.Rows
 		var err error
 
-		if ok {
-			queryString = `
-				select move, delay, accuracy, timestamp from moves
-				where sid = $1 and aid = $2 and did = $3 and move = $4
-			`
-			rows, err = db.Query(
-				queryString,
-				sid,
-				params["aid"][0],
-				params["did"][0],
-				move[0],
-			)
-		} else {
-			queryString = `
-				select move, delay, accuracy, timestamp from moves
-				where sid = $1 and aid = $2 and did = $3
-			`
-			rows, err = db.Query(
-				queryString,
-				sid,
-				params["aid"][0],
-				params["did"][0],
-			)
-		}
+		queryString = `
+			select move as name, delay, accuracy, timestamp from moves where sid = $1 and aid = $2 and did = $3
+			union 
+			select position as name, delay, -1 as accuracy, timestamp from positions where sid = $1 and aid = $2 and did = $3
+			order by timestamp;
+		`
+		rows, err = db.Query(
+			queryString,
+			sid,
+			params["aid"][0],
+			params["did"][0],
+		)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -63,19 +50,19 @@ func GetMovesInSession(db *sql.DB) gin.HandlerFunc {
 		}
 
 		defer rows.Close()
-		var moves []entity.Move
+		var danceData []entity.DanceAction
 		for rows.Next() {
-			var move entity.Move
-			err := rows.Scan(&move.Move, &move.Delay, &move.Accuracy, &move.Timestamp)
+			var action entity.DanceAction
+			err := rows.Scan(&action.Name, &action.Delay, &action.Accuracy, &action.Timestamp)
 
 			if err != nil {
 				log.Fatal(err)
 			}
-			moves = append(moves, move)
+			danceData = append(danceData, action)
 		}
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
-			"message": moves,
+			"message": danceData,
 		})
 	}
 	return gin.HandlerFunc(fn)

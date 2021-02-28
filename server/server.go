@@ -47,12 +47,13 @@ func serveWs(task *tasks.Tasks, w http.ResponseWriter, r *http.Request, amqpConn
 			log.Fatal(err)
 		}
 	}
-
+	// increment session id to create a new session
+	task.SessionID = task.SessionID + 1
 	queryString := `insert into sessions (sid, aid, timestamp) values ($1, $2, $3)`
 	res, err := task.DbConn.Exec(
 		queryString,
-		task.SessionID+1,
-		task.AccountID,
+		task.SessionID,
+		1, // hack because Accounts is not set up yet
 		time.Now().Format("2006-01-02 15:04:05"),
 	)
 	if err != nil {
@@ -141,7 +142,7 @@ func main() {
 
 	// router.GET("/moves")
 	router.GET("/breakdown/:sid", handler.GetMovesBreakdown(db))
-	router.GET("/moves/:sid", handler.GetMovesInSession(db))
+	router.GET("/moves/:sid", handler.GetDataInSession(db))
 	router.GET("/moves", handler.GetAllMoves(db))
 
 	router.GET("/sessions", handler.GetAllSessions(db))

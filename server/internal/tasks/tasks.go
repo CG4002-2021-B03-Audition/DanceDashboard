@@ -74,7 +74,7 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
 		delay,
 		accuracy,
 		fmt.Sprintf("%s", jsonData["timestamp"]),
-		task.AccountID,
+		1, // hack because Accounts is not set up
 		1, // did
 		task.SessionID,
 	)
@@ -121,13 +121,12 @@ func (task *Tasks) SendDancePosition(d amqp.Delivery) (bool, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	res, err := task.DbConn.Exec(
 		queryString,
 		jsonData["position"],
 		delay,
 		fmt.Sprintf("%s", jsonData["timestamp"]),
-		task.AccountID,
+		1, // hack because Accounts is not set up
 		1, // did
 		task.SessionID,
 	)

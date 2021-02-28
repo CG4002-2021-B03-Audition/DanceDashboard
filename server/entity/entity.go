@@ -14,3 +14,10 @@ type Session struct {
 	Aid       int       `json:"aid"`
 	Timestamp time.Time `json:"timestamp"`
 }
+
+type DanceAction struct {
+	Name      string    `json:"name"`
+	Delay     float64   `json:"delay"`
+	Accuracy  float64   `json:"accuracy"`
+	Timestamp time.Time `json:"timestamp"`
+}
