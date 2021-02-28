@@ -14,13 +14,12 @@ const selectActual = (state : any) => state.liveStore.actualMoves
 const OfflineDanceData: React.FC<Props> = ({ danceData }) => {
     const [ isWrong, setIsWrong ] = useState<boolean[]>()
     const [ showWrongMoves, setShowWrongMoves ] = useState<boolean>(false)
-
+    const [ rows, setRows ] = useState<any>([])
     // To be refactored when actual dance data can be sent
     const actualActions = useSelector(selectActual)
     
     useEffect(() => {
         let currentScore : boolean[] = []
-
         danceData.forEach((action : any, index : number) => {
             if(action.name === actualActions[index % actualActions.length]) {
                 currentScore.push(false)
@@ -32,18 +31,21 @@ const OfflineDanceData: React.FC<Props> = ({ danceData }) => {
         setIsWrong([...currentScore])
     }, [danceData])
 
-    const formatData = danceData.sort(sortByTimeStampOldest).map((obj : any) => {
-        let datetime = new Date(obj.timestamp)
-        let formatObj = {
-            name: obj.name, 
-            timestamp: `${datetime.getHours()}:${datetime.getMinutes()}:${datetime.getSeconds()}`, 
-            delay: obj.delay,
-            accuracy: (obj.accuracy >= 0) ? obj.accuracy * 100 + "%" : "-",
-        }
-        return formatObj
-    })
-    const rows : string[][] = formatData.map((row : any) => Object.values(row))
-    console.log(showWrongMoves)
+    useEffect(() => {
+        const formatData = danceData.sort(sortByTimeStampOldest).map((obj : any) => {
+            let datetime = new Date(obj.timestamp)
+            let formatObj = {
+                name: obj.name, 
+                timestamp: `${datetime.getHours()}:${datetime.getMinutes()}:${datetime.getSeconds()}`, 
+                delay: obj.delay,
+                accuracy: (obj.accuracy >= 0) ? obj.accuracy * 100 + "%" : "-",
+            }
+            return formatObj
+        })
+        const newRows : string[][] = formatData.map((row : any) => Object.values(row))
+        setRows([...newRows])
+    }, [danceData])
+    
     return (
         <Container
             overflowY="auto"
