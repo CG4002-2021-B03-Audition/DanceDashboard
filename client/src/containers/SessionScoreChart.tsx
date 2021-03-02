@@ -18,7 +18,6 @@ const SessionScoreChart: React.FC<Props> = ({ danceData }) => {
         let totalScore = danceData.length
         let currentScore = 0
 
-        
         danceData.forEach((action : any, index : number) => {
             if(action.name === actualActions[index % actualActions.length]) {
                 currentScore += 1

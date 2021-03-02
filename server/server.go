@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -154,23 +155,24 @@ func main() {
 	// })
 
 	// For week 7: fake publisher to send dance position info
-	// go func() {
-	// 	fmt.Println("Publisher started...")
-	// 	danceData := tasks.GenerateDanceData()
-	// 	fmt.Println(danceData)
-	// 	for i := 0; i < len(danceData); i++ {
-	// 		data := danceData[i]
-	// 		timestamp := time.Now().Format("2006-01-02 15:04:05")
-	// 		data["timestamp"] = timestamp
-	// 		dataToBytes, _ := json.Marshal(data)
-	// 		amqpConn.Publish(
-	// 			"move",
-	// 			dataToBytes,
-	// 		)
-	// 		time.Sleep(time.Second * 3)
-	// 	}
-	// 	fmt.Println("Finished publishing messages...")
-	// }()
+	go func() {
+		fmt.Println("Publisher started...")
+		danceData := tasks.GenerateDanceData()
+		fmt.Println(danceData)
+		for i := 0; i < len(danceData); i++ {
+			data := danceData[i]
+			timestamp := time.Now().Format("2006-01-02 15:04:05")
+			data["timestamp"] = timestamp
+			dataToBytes, _ := json.Marshal(data)
+			amqpConn.Publish(
+				"move",
+				dataToBytes,
+			)
+			time.Sleep(time.Second * 3)
+		}
+		fmt.Println("Finished publishing messages...")
+	}()
+
 	// go func() {
 	// 	for {
 	// 		time.Sleep(time.Second * 2)

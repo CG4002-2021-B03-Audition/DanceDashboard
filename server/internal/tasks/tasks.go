@@ -186,7 +186,7 @@ func GenerateMove() []byte {
 GenerateDanceData returns a slice of maps which contain the fake moves and positions data
 */
 func GenerateDanceData() []map[string]interface{} {
-	danceMoves := [8]string{
+	danceMoves := []string{
 		"dab",
 		"elbowkick",
 		"listen",
@@ -196,40 +196,77 @@ func GenerateDanceData() []map[string]interface{} {
 		"sidepump",
 		"wipetable",
 	}
-	dancePosition := [6]string{
-		"1 2 3",
-		"1 3 2",
-		"2 1 3",
-		"2 3 1",
+	// dancePosition := [6]string{
+	// 	"1 2 3",
+	// 	"1 3 2",
+	// 	"2 1 3",
+	// 	"2 3 1",
+	// 	"3 1 2",
+	// 	"3 2 1",
+	// }
+
+	danceActions := [20]string{
+		"pointhigh",
+		"dab",
 		"3 1 2",
+		"wipetable",
+		"2 1 3",
+		"gun",
+		"elbowkick",
 		"3 2 1",
+		"hair",
+		"listen",
+		"1 2 3",
+		"sidepump",
+		"elbowkick",
+		"3 2 1",
+		"hair",
+		"listen",
+		"1 2 3",
+		"sidepump",
+		"dab",
+		"dab",
 	}
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(danceActions), func(i, j int) { danceActions[i], danceActions[j] = danceActions[j], danceActions[i] })
+
 	dancerID := "1"
 	res := make([]map[string]interface{}, 0)
 	for i := 0; i < 20; i++ {
+		var danceAction map[string]interface{}
+		action := danceActions[i]
 		delay := rand.Float64() * 1.5
 		accuracy := rand.Float64()
-		if i%3 == 0 {
-			position := map[string]interface{}{
-				"type":      "position",
-				"dancerId":  dancerID,
-				"position":  dancePosition[rand.Intn(6)],
-				"syncDelay": fmt.Sprintf("%.1f", delay),
-			}
-			res = append(res, position)
-		} else {
-			move := map[string]interface{}{
+
+		if contains(action, danceMoves) {
+			danceAction = map[string]interface{}{
 				"type":      "move",
 				"dancerId":  dancerID,
-				"move":      danceMoves[rand.Intn(8)],
+				"move":      action,
 				"syncDelay": fmt.Sprintf("%.1f", delay),
 				"accuracy":  fmt.Sprintf("%.1f", accuracy),
 			}
-			res = append(res, move)
+		} else {
+			danceAction = map[string]interface{}{
+				"type":      "position",
+				"dancerId":  dancerID,
+				"position":  action,
+				"syncDelay": fmt.Sprintf("%.1f", delay),
+			}
 		}
+		res = append(res, danceAction)
 	}
 
 	return res
+}
+
+func contains(s1 string, list []string) bool {
+	for _, s2 := range list {
+		if s1 == s2 {
+			return true
+		}
+	}
+	return false
 }
 
 /*

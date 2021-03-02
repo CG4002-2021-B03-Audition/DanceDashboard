@@ -2,7 +2,6 @@ import * as actionTypes from "./actions"
 import { WsState, WsActionTypes } from "./types"
 
 const actualMoves = [
-    "-",
     "pointhigh", 
     "dab", 
     "3 1 2", 
