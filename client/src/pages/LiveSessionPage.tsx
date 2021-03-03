@@ -2,11 +2,11 @@ import React from 'react';
 import Layout from '../components/Layout/Layout';
 import DelayChart from '../containers/DelayChart';
 import { Stack, ButtonGroup, Button, Container } from '@chakra-ui/react';
-import MoveAccuracyChart from '../containers/MoveAccuracyChart';
 import { moveSocket } from '../socket'
 import MoveTable from '../containers/MoveTable';
 import DancePositions from '../containers/DancePositions';
 import MovePredictionChart from '../containers/MovePredictionChart';
+import AdvancedStatsDrawer from '../containers/AdvancedStatsDrawer';
 
 const LiveSessionPage: React.FC = () => {
     const handleConnect = () => {
@@ -22,6 +22,7 @@ const LiveSessionPage: React.FC = () => {
                 <ButtonGroup>
                     <Button onClick={handleConnect}>Start dance session!</Button>
                     <Button onClick={handleDisconnect}>Stop dance session!</Button>
+                    <AdvancedStatsDrawer/>
                 </ButtonGroup>
             </Container>
             <Stack isInline={true} 
@@ -40,7 +41,6 @@ const LiveSessionPage: React.FC = () => {
                 <Container 
                     centerContent  
                 >
-                    {/* <MoveAccuracyChart/> */}
                     <MovePredictionChart/>
                 </Container>
             </Stack>
