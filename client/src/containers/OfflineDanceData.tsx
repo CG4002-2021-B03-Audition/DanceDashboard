@@ -17,7 +17,7 @@ const OfflineDanceData: React.FC<Props> = ({ danceData }) => {
     const [ rows, setRows ] = useState<any>([])
     // To be refactored when actual dance data can be sent
     const actualActions = useSelector(selectActual)
-    
+
     useEffect(() => {
         let currentScore : boolean[] = []
         danceData.forEach((action : any, index : number) => {
@@ -29,7 +29,7 @@ const OfflineDanceData: React.FC<Props> = ({ danceData }) => {
         })
 
         setIsWrong([...currentScore])
-    }, [danceData])
+    }, [danceData, actualActions])
 
     useEffect(() => {
         const formatData = danceData.sort(sortByTimeStampOldest).map((obj : any) => {

@@ -3,7 +3,6 @@ import { ChartOptions } from 'chart.js';
 import React, { useEffect, useState } from 'react';
 import { fetchMoveBreakdown } from '../apiCalls';
 import DoughnutChart from '../components/Charts/DoughnutChart';
-import PolarChart from '../components/Charts/PolarChart';
 import { Session } from '../store/session/types';
 
 interface Props {

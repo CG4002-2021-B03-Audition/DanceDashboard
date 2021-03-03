@@ -25,7 +25,7 @@ const SessionScoreChart: React.FC<Props> = ({ danceData }) => {
         })
 
         setScores([currentScore, totalScore])
-    }, [danceData])
+    }, [danceData, actualActions])
 
     const calculateScore = () => {
         if(scores[0] === 0) return 0
