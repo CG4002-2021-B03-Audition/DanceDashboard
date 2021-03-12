@@ -67,15 +67,9 @@ func serveWs(task *tasks.Tasks, w http.ResponseWriter, r *http.Request, amqpConn
 		Conn:  amqpConn,
 		Tasks: task,
 	}
-	// For week 7: fake publisher to send dance move info
-	// start worker for move
-	err = worker.StartWorker("test-queue", "move", 1)
-	if err != nil {
-		panic(err)
-	}
 
-	// start worker for position
-	err = worker.StartWorker("test-queue", "position", 1)
+	// start worker for move
+	err = worker.StartWorker("DanceActionsQueue", "action", 1)
 	if err != nil {
 		panic(err)
 	}
@@ -165,34 +159,13 @@ func main() {
 			data["timestamp"] = timestamp
 			dataToBytes, _ := json.Marshal(data)
 			amqpConn.Publish(
-				"move",
+				"action",
 				dataToBytes,
 			)
 			time.Sleep(time.Second * 3)
 		}
 		fmt.Println("Finished publishing messages...")
 	}()
-
-	// go func() {
-	// 	for {
-	// 		time.Sleep(time.Second * 2)
-	// 		data := tasks.GenerateMove()
-	// 		amqpConn.Publish(
-	// 			"move",
-	// 			data,
-	// 		)
-	// 	}
-	// }()
-
-	// go func() {
-	// 	for {
-	// 		time.Sleep(time.Second * 2)
-	// 		data := tasks.GeneratePosition()
-	// 		conn.Publish(
-	// 			"position",
-	// 			data)
-	// 	}
-	// }()
 
 	router.Run(":8080")
 }

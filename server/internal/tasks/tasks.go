@@ -23,26 +23,12 @@ type Tasks struct {
 	AccountID int        // task will be tagged to the account id
 }
 
-// SendTest is a test task for the worker
-func (task *Tasks) SendTest(d amqp.Delivery) bool {
-	if d.Body == nil {
-		fmt.Println("Error, no message body!")
-		return false
-	}
-	fmt.Println(string(d.Body))
-	return true
-}
-
 // SendDanceMove is a custom task for the worker
 func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
-	// checks if client websocket connection is alive
-	if _, ok := task.Pool.Clients[task.Client]; !ok {
-		return false, errors.New("client websocket disconnected")
+	if isValid, err := validateTask(task, d); !isValid {
+		return isValid, err
 	}
-	if d.Body == nil {
-		fmt.Println("Error, no message body!")
-		return false, nil
-	}
+
 	fmt.Println(string(d.Body))
 	message := ws.Message{Body: string(d.Body)}
 
@@ -93,13 +79,8 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
 
 // SendDancePosition is a custom task for the worker
 func (task *Tasks) SendDancePosition(d amqp.Delivery) (bool, error) {
-	// checks if client websocket connection is alive
-	if _, ok := task.Pool.Clients[task.Client]; !ok {
-		return false, errors.New("client websocket disconnected")
-	}
-	if d.Body == nil {
-		fmt.Println("Error, no message body!")
-		return false, nil
+	if isValid, err := validateTask(task, d); !isValid {
+		return isValid, err
 	}
 	fmt.Println(string(d.Body))
 	message := ws.Message{Body: string(d.Body)}
@@ -135,51 +116,11 @@ func (task *Tasks) SendDancePosition(d amqp.Delivery) (bool, error) {
 		log.Fatal(err)
 	}
 
-	rowCnt, err := res.RowsAffected()
+	_, err = res.RowsAffected()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print(rowCnt)
 	return true, nil
-}
-
-/*
-GenerateMove returns a json string which replicates move data from external comms
-Message format: {
-	"dancerId": int,
-	"move": string,
-	"timestamp": string,
-	"syncDelay": string,
-	"accuracy": string,
-}
-*/
-func GenerateMove() []byte {
-	danceMoves := [8]string{
-		"dab",
-		"elbowkick",
-		"listen",
-		"pointhigh",
-		"hair",
-		"gun",
-		"sidepump",
-		"wipetable",
-	}
-	dancerID := "1"
-	datetime := time.Now().Format("2006-01-02 15:04:05")
-	accuracy := rand.Float64()
-	delay := rand.Float64() * 1.5
-
-	// create json string from map and return json string
-	m := map[string]string{
-		"type":      "move",
-		"dancerId":  dancerID,
-		"move":      danceMoves[rand.Intn(8)],
-		"timestamp": datetime,
-		"syncDelay": fmt.Sprintf("%.1f", delay),
-		"accuracy":  fmt.Sprintf("%.1f", accuracy),
-	}
-	tmp, _ := json.Marshal(m)
-	return tmp
 }
 
 /*
@@ -196,14 +137,6 @@ func GenerateDanceData() []map[string]interface{} {
 		"sidepump",
 		"wipetable",
 	}
-	// dancePosition := [6]string{
-	// 	"1 2 3",
-	// 	"1 3 2",
-	// 	"2 1 3",
-	// 	"2 3 1",
-	// 	"3 1 2",
-	// 	"3 2 1",
-	// }
 
 	danceActions := [20]string{
 		"pointhigh",
@@ -269,31 +202,19 @@ func contains(s1 string, list []string) bool {
 	return false
 }
 
-/*
-GeneratePosition returns a json string which replicates position data from external comms
-Message format: {
-	"position": string,
-	"timestamp": string,
-	"syncDelay": string,
-}
-*/
-func GeneratePosition() []byte {
-	dancePosition := [6]string{
-		"1 2 3",
-		"1 3 2",
-		"2 1 3",
-		"2 3 1",
-		"3 1 2",
-		"3 2 1",
+func validateTask(task *Tasks, d amqp.Delivery) (bool, error) {
+	var isAlive, hasMessage bool
+	var err error
+
+	if _, ok := task.Pool.Clients[task.Client]; !ok {
+		isAlive, err = false, errors.New("client websocket disconnected")
+	} else {
+		isAlive, err = true, nil
 	}
-	datetime := time.Now().Format("2006-01-02 15:04:05")
-	delay := rand.Float64() * 1.5
-	m := map[string]string{
-		"type":      "position",
-		"position":  dancePosition[rand.Intn(6)],
-		"timestamp": datetime,
-		"syncDelay": fmt.Sprintf("%.1f", delay),
+	if d.Body == nil {
+		hasMessage, err = false, fmt.Errorf("%w, no message body", err)
+	} else {
+		hasMessage, err = true, fmt.Errorf("%w", err)
 	}
-	tmp, _ := json.Marshal(m)
-	return tmp
+	return hasMessage && isAlive, err
 }
