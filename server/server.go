@@ -9,11 +9,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/CG4002-2021-B03-Audition/Dashboard/server/controller"
 	handler "github.com/CG4002-2021-B03-Audition/Dashboard/server/handler"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/rabbit"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/tasks"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/internal/ws"
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/middlewares"
+	"github.com/CG4002-2021-B03-Audition/Dashboard/server/service"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -69,13 +71,18 @@ func serveWs(task *tasks.Tasks, w http.ResponseWriter, r *http.Request, amqpConn
 	}
 
 	// start worker for move
-	err = worker.StartWorker("DanceActionsQueue", "action", 1)
+	err = worker.StartDanceActionWorker("DanceActionsQueue", "action", "events", 1)
 	if err != nil {
 		panic(err)
 	}
 
 	go client.CheckConn()
 }
+
+var (
+	sessionService    service.SessionService       = service.New()
+	sessionController controller.SessionController = controller.New(sessionService)
+)
 
 func main() {
 	err := godotenv.Load()
@@ -140,7 +147,21 @@ func main() {
 	router.GET("/moves/:sid", handler.GetDataInSession(db))
 	router.GET("/moves", handler.GetAllMoves(db))
 
-	router.GET("/sessions", handler.GetAllSessions(db))
+	// router.GET("/sessions", handler.GetAllSessions(db))
+	router.GET("/sessions", func(ctx *gin.Context) {
+		params := ctx.Request.URL.Query()
+		queryResult, err := sessionController.FindAll(db, params)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": err,
+			})
+		}
+		ctx.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": queryResult,
+		})
+	})
 
 	// router.GET("/session/:id", func(c *gin.Context) {
 	// })
