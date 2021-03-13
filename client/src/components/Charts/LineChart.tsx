@@ -18,14 +18,17 @@ const LineChart: React.FC<Props> = (props) => {
     return (
         <>
             {(props.chartTitle !== undefined) ? 
-            <Stack isInline={true} align="center" justify="center">
-                <Text fontSize="2xl" textAlign="center">{props.chartTitle}</Text>
-                <Tooltip label={props.info}>
-                    <QuestionOutlineIcon/>
-                </Tooltip>
-            </Stack> : <></>
+            <>
+                <Stack isInline={true} align="center" justify="center">
+                    <Text fontSize="2xl" textAlign="center">{props.chartTitle}</Text>
+                    <Tooltip label={props.info}>
+                        <QuestionOutlineIcon/>
+                    </Tooltip>
+                </Stack>
+                <Divider orientation="horizontal" m={4}/>
+            </> : <></>
             }
-            <Divider orientation="horizontal" m={4}/>
+            
             <Line 
                 data={{
                     labels: props.xAxis,
