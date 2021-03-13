@@ -47,7 +47,7 @@ const DelayChart = () => {
               info="Displays the average team delay of every move performed."
           />
           <Flex>
-            <Badge colorScheme="purple">Latest</Badge>
+            <Badge colorScheme="purple">Last 5 Moves</Badge>
             <Spacer/>
             <Badge colorScheme="purple">Newest</Badge>
           </Flex>
