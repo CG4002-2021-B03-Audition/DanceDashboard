@@ -52,7 +52,7 @@ export const imu_message = (data: any): IMUDataType => {
         yaw: data.gyroYaw,
         pitch: data.gyroPitch,
         roll: data.gyroRoll,
-        timestamp: data.timestamp,
+        timestamp: parseInt(data.timestamp),
         dancerId: data.dancerId,
     }
     return {

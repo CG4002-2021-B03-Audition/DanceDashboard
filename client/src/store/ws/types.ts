@@ -44,7 +44,7 @@ export interface IMU {
     yaw: number
     pitch: number
     roll: number
-    timestamp: string
+    timestamp: number
     dancerId: number
 }
 

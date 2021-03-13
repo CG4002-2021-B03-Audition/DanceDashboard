@@ -1,10 +1,11 @@
 import { ChartOptions } from 'chart.js';
+import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import LineChart from '../components/Charts/LineChart';
 
 const selectValue = (dancerId: number, datapoint: string) => (state: any) => state.liveStore.imu[dancerId].map((item: any) => item[datapoint])
-const selectTime = (dancerId: number) => (state: any) => state.liveStore.imu[dancerId].map((item: any) => item.timestamp)
+const selectTime = (dancerId: number) => (state: any) => state.liveStore.imu[dancerId].map((item: any) => moment(item.timestamp).format('hh:mm:ss:SS'))
 
 interface Props {
     dancerId: number,
@@ -23,6 +24,9 @@ const SensorChart: React.FC<Props> = (props) => {
             scaleLabel: {
               display: true,
               labelString: 'Time'
+            },
+            ticks: {
+              display: false
             },
           },
         ],
