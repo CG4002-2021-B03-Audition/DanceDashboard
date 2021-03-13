@@ -8,21 +8,23 @@ interface Props {
     options: ChartOptions
     xAxis: (string | number | string[] | number[] | Date | Date[] | moment.Moment | moment.Moment[])[] | undefined
     yAxis: (number | number[] | null | undefined)[] | Chart.ChartPoint[] | undefined
-    xLabel: string | undefined
+    xLabel?: string | undefined
     yLabel: string | undefined
-    chartTitle: string | undefined
+    chartTitle?: string | undefined
     info?: string | undefined
 }
 
 const LineChart: React.FC<Props> = (props) => {
     return (
         <>
+            {(props.chartTitle !== undefined) ? 
             <Stack isInline={true} align="center" justify="center">
                 <Text fontSize="2xl" textAlign="center">{props.chartTitle}</Text>
                 <Tooltip label={props.info}>
                     <QuestionOutlineIcon/>
                 </Tooltip>
-            </Stack>
+            </Stack> : <></>
+            }
             <Divider orientation="horizontal" m={4}/>
             <Line 
                 data={{

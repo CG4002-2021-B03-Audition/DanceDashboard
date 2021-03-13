@@ -7,14 +7,6 @@ export interface Move {
     delay: number
 }
 
-export interface WsState {
-    isConnected: boolean
-    actualMoves: string[]
-    actualMoveIndex: number
-    moves: Move[]
-    positions: Position[]
-}
-
 interface WsMoveConnect {
     type: typeof WS_MOVE_CONNECT
     payload: boolean
@@ -42,3 +34,37 @@ interface WsNextActual {
 }
 
 export type WsActionTypes = WsMoveConnect | WsMoveMessage | WsPosMessage | WsNextActual
+
+import { IMU_MESSAGE } from "./actions"
+
+export interface IMU {
+    x: number
+    y: number
+    z: number
+    yaw: number
+    pitch: number
+    roll: number
+    timestamp: string
+    dancerId: number
+}
+
+interface IMUData {
+    type: typeof IMU_MESSAGE
+    payload: IMU
+}
+
+export type IMUDataType = IMUData
+
+export interface WsState {
+    isConnected: boolean
+    actualMoves: string[]
+    actualMoveIndex: number
+    moves: Move[]
+    positions: Position[]
+    imu: {
+        [key: number]: IMU[]
+        0: IMU[]
+        1: IMU[]
+        2: IMU[]
+    }
+}

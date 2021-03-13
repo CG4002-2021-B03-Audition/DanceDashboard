@@ -1,5 +1,5 @@
 import store from "./store/store";
-import { ws_move_connect, ws_move_message, WS_NEXT_ACTUAL, ws_pos_message } from "./store/ws/actions";
+import { imu_message, ws_move_connect, ws_move_message, WS_NEXT_ACTUAL, ws_pos_message } from "./store/ws/actions";
 
 class Socket {
     ws: WebSocket | undefined;
@@ -29,8 +29,11 @@ class Socket {
                 store.dispatch(ws_move_message(data))
             } else if (type === "position") {
                 store.dispatch(ws_pos_message(data))
+            } else if (type === "imu") {
+                // console.log(data)
+                store.dispatch(imu_message(data))
             }
-            store.dispatch({ type: WS_NEXT_ACTUAL, payload: 1}) // for week 7
+            // store.dispatch({ type: WS_NEXT_ACTUAL, payload: 1}) // for week 7
             
         }
         this.ws.onclose = event => {
