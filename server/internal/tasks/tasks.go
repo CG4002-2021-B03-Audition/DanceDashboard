@@ -23,7 +23,7 @@ type Tasks struct {
 	AccountID int        // task will be tagged to the account id
 }
 
-// SendDanceMove is a custom task for the worker
+// SendDanceMove is a custom task for the worker to get the dance moves & send to websocket
 func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
 	if isValid, err := validateTask(task, d); !isValid {
 		return isValid, err
@@ -42,7 +42,7 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
 
 	queryString := `
 		insert into moves (move, delay, accuracy, timestamp, aid, did, sid)
-		values ($1, $2, $3, $4, $5, $6, $7)
+		values ($1, $2, $3, to_timestamp($4), $5, $6, $7)
 	`
 
 	delay, err := strconv.ParseFloat(fmt.Sprintf("%s", jsonData["syncDelay"]), 64)
@@ -53,13 +53,17 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	timestamp, err := strconv.ParseFloat(fmt.Sprintf("%s", jsonData["timestamp"]), 64)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	res, err := task.DbConn.Exec(
 		queryString,
 		jsonData["move"],
 		delay,
 		accuracy,
-		fmt.Sprintf("%s", jsonData["timestamp"]),
+		timestamp,
 		1, // hack because Accounts is not set up
 		1, // did
 		task.SessionID,
@@ -77,7 +81,7 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
 	return true, nil
 }
 
-// SendDancePosition is a custom task for the worker
+// SendDancePosition is a custom task for the worker to get the dance positons & send to websocket
 func (task *Tasks) SendDancePosition(d amqp.Delivery) (bool, error) {
 	if isValid, err := validateTask(task, d); !isValid {
 		return isValid, err
@@ -121,6 +125,35 @@ func (task *Tasks) SendDancePosition(d amqp.Delivery) (bool, error) {
 		log.Fatal(err)
 	}
 	return true, nil
+}
+
+// SendIMUData is a custom task for the worker to process IMU data & send to websocket
+func (task *Tasks) SendIMUData(msg amqp.Delivery) (bool, error) {
+	if isValid, err := validateTask(task, msg); !isValid {
+		return isValid, err
+	}
+	// var expectedStringArray []entity.IMUData
+	var expectedStringArray []map[string]interface{}
+	err := json.Unmarshal(msg.Body, &expectedStringArray)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, obj := range expectedStringArray {
+		obj["type"] = "imu"
+		// fmt.Printf("%+v\n", obj)
+		jsonString, err := json.Marshal(obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(string(jsonString))
+		message := ws.Message{Body: string(jsonString)}
+		// fmt.Printf("%+v\n", message)
+		task.Pool.Broadcast <- message
+	}
+	// fmt.Printf("%v\n", expectedStringArray)
+	// message := ws.Message{Body: string(msg.Body)}
+
+	return false, nil
 }
 
 /*
