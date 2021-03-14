@@ -1,9 +1,10 @@
-import { IMUDataType, WsActionTypes } from "./types"
+import { IMUDataType, WsActionTypes, WsResetState } from "./types"
 export const WS_MOVE_CONNECT = 'WS_CONNECT'
 export const WS_MOVE_MESSAGE = 'WS_MOVE_MESSAGE'
 export const WS_POS_MESSAGE = 'WS_POS_MESSAGE'
 export const WS_NEXT_ACTUAL = 'WS_NEXT_ACTUAL'
 export const IMU_MESSAGE = 'IMU_MESSAGE'
+export const WS_RESET_STATE = 'WS_RESET_STATE'
 
 export const ws_move_connect = (data : boolean): WsActionTypes => {
     return {
@@ -58,5 +59,12 @@ export const imu_message = (data: any): IMUDataType => {
     return {
         type:  IMU_MESSAGE,
         payload: data
+    }
+}
+
+export const ws_reset_state = () : WsResetState => {
+    return {
+        type: WS_RESET_STATE,
+        payload: ""
     }
 }

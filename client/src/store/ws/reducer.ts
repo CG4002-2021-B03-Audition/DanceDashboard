@@ -1,5 +1,5 @@
 import * as actionTypes from "./actions"
-import { WsState, WsActionTypes, IMUDataType } from "./types"
+import { WsState, WsActionTypes, IMUDataType, WsResetState } from "./types"
 
 const actualMoves = [
     "pointhigh", 
@@ -39,7 +39,7 @@ const initialState: WsState = {
 
 export function wsReducer(
     state = initialState, 
-    action: WsActionTypes | IMUDataType
+    action: WsActionTypes | IMUDataType | WsResetState
 ): WsState {
     switch (action.type) {
         case actionTypes.WS_MOVE_CONNECT:
@@ -68,6 +68,19 @@ export function wsReducer(
             }
             newState.imu[action.payload.dancerId] = [...newState.imu[action.payload.dancerId], action.payload]
             return newState
+        case actionTypes.WS_RESET_STATE:
+            return {
+                isConnected: false,
+                actualMoves: actualMoves,
+                actualMoveIndex: 0,
+                moves: [],
+                positions: [],
+                imu: {
+                    0: [],
+                    1: [],
+                    2: [],
+                },
+            }            
         default:
             return state
     }

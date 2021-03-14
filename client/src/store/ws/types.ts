@@ -1,4 +1,4 @@
-import { WS_MOVE_CONNECT, WS_MOVE_MESSAGE, WS_NEXT_ACTUAL, WS_POS_MESSAGE } from "./actions"
+import { WS_MOVE_CONNECT, WS_MOVE_MESSAGE, WS_NEXT_ACTUAL, WS_POS_MESSAGE, WS_RESET_STATE } from "./actions"
 
 export interface Move {
     move: string
@@ -54,6 +54,11 @@ interface IMUData {
 }
 
 export type IMUDataType = IMUData
+
+export interface WsResetState {
+    type: typeof WS_RESET_STATE
+    payload: ""
+}
 
 export interface WsState {
     isConnected: boolean
