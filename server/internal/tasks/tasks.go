@@ -53,6 +53,7 @@ func (task *Tasks) SendDanceMove(d amqp.Delivery) (bool, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	timestamp, err := strconv.ParseFloat(fmt.Sprintf("%s", jsonData["timestamp"]), 64)
 	if err != nil {
 		log.Fatal(err)
@@ -99,18 +100,23 @@ func (task *Tasks) SendDancePosition(d amqp.Delivery) (bool, error) {
 
 	queryString := `
 		insert into positions (position, delay, timestamp, aid, did, sid)
-		values ($1, $2, $3, $4, $5, $6)
+		values ($1, $2, to_timestamp($3), $4, $5, $6)
 	`
 
 	delay, err := strconv.ParseFloat(fmt.Sprintf("%s", jsonData["syncDelay"]), 64)
 	if err != nil {
 		log.Fatal(err)
 	}
+	timestamp, err := strconv.ParseFloat(fmt.Sprintf("%s", jsonData["timestamp"]), 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	res, err := task.DbConn.Exec(
 		queryString,
 		jsonData["position"],
 		delay,
-		fmt.Sprintf("%s", jsonData["timestamp"]),
+		timestamp,
 		1, // hack because Accounts is not set up
 		1, // did
 		task.SessionID,
@@ -145,7 +151,7 @@ func (task *Tasks) SendIMUData(msg amqp.Delivery) (bool, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(string(jsonString))
+		// fmt.Println(string(jsonString))
 		message := ws.Message{Body: string(jsonString)}
 		// fmt.Printf("%+v\n", message)
 		task.Pool.Broadcast <- message
@@ -153,7 +159,7 @@ func (task *Tasks) SendIMUData(msg amqp.Delivery) (bool, error) {
 	// fmt.Printf("%v\n", expectedStringArray)
 	// message := ws.Message{Body: string(msg.Body)}
 
-	return false, nil
+	return true, nil
 }
 
 /*
