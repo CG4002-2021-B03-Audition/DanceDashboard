@@ -1,5 +1,6 @@
 import { Button } from '@chakra-ui/button';
 import { Divider, Text } from '@chakra-ui/layout';
+import { useToast } from '@chakra-ui/toast';
 import React, { useEffect, useState } from 'react'
 import { fetchDataInSession, sendSessionResult } from '../../apiCalls';
 import ExtraStatChart from '../../containers/ExtraStatChart';
@@ -13,6 +14,7 @@ interface Props {
 const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, sessionId}) => {
     const [danceActions, setDanceActions] = useState<any[]>([])
     const [isSelected, setSelected] = useState<any[]>([])
+    const toast = useToast()
     useEffect(() => {
         async function getDanceActions(sessionId : number) {
             
@@ -39,7 +41,22 @@ const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, sessionId}) => {
 
         if (sessionId !== undefined) {
             const resp = await sendSessionResult(items, sessionId)
-            console.log(resp)
+            
+            if (resp.data.success) {
+                toast({
+                    title: "Session saved.",
+                    status: "success",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            } else {
+                toast({
+                    title: "Session is already saved!",
+                    status: "warning",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            }
         }
     }
 

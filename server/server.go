@@ -195,7 +195,7 @@ func main() {
 			Actions []entity.Result `json:"actions" binding:"required"`
 		}
 		if ctx.Bind(&data) != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
+			ctx.JSON(http.StatusOK, gin.H{
 				"success": false,
 				"message": "",
 			})
@@ -220,9 +220,9 @@ func main() {
 		}
 		err = tx.Commit()
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
+			ctx.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "",
+				"message": err,
 			})
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{
