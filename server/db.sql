@@ -48,6 +48,18 @@ CREATE Table Positions (
     primary key (pid, did, sid)
 );
 
+CREATE TABLE Results (
+    sid int not null,
+    aid int not null,
+    action varchar(50),
+    delay numeric,
+    accuracy numeric,
+    timestamp timestamp,
+    isCorrect boolean,
+    foreign key (aid, sid) references Sessions(aid, sid) on delete cascade,
+    primary key (sid, aid, timestamp)
+);
+
 -- dummy data
 insert into accounts(username, password, email) values ('kangming', 'password', 'kangming@u.nus.edu');
 
