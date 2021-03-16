@@ -8,4 +8,5 @@ export const api = {
     getMovesInSession: (sid: number) => `${BASE_URL}/moves/${sid}`,
     getMoveBreakdown: (sid: number) => `${BASE_URL}/breakdown/${sid}`,
     sendSessionResult: (sid: number) => `${BASE_URL}/result/${sid}`,
+    getSessionResult: (sid: number) => `${BASE_URL}/result/${sid}`,
 }

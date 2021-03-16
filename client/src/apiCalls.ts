@@ -38,10 +38,16 @@ const sendSessionResult = async (data : any, sid : number) => {
     return resp
 }
 
+const getSessionResult = async (sid : number) => {
+    const resp = await axios.get(api.sendSessionResult(sid))
+    return resp
+}
+
 export {
     fetchLastSession,
     fetchAllSessions,
     fetchDataInSession,
     fetchMoveBreakdown,
     sendSessionResult,
+    getSessionResult,
 }
