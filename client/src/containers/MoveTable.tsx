@@ -14,19 +14,31 @@ const selectPositions = (state: any) => {
 const MoveTable = () => {
     const wsMoves = useSelector(selectMoves)
     const wsPositions = useSelector(selectPositions)
-    const currentTime = new Date()
+    const currentTime = new Date().getTime() / 1000 // current unix time in seconds
     const wsData : WsObj[] = [...wsMoves, ...wsPositions]
     const formatData = wsData.sort(sortByTimeStampNewest).map((obj : WsObj) => {
-        let timeStamp = new Date(obj.timestamp)
-
-        // convert time difference to seconds 
-        let timeDiff = (currentTime.getTime() - timeStamp.getTime()) / 1000
+        let timeOfAction = parseInt(obj.timestamp)
+        
+        let timeDiff = currentTime - timeOfAction
 
         // if more than 120 seconds (2 mins), display time difference in minutes instead 
-        let displayTime = (timeDiff < 120 ? timeDiff : timeDiff / 60)
+        let isMinutes = false
+        if (timeDiff > 120) {
+            timeDiff = timeDiff / 60
+            isMinutes = true
+        }
+        let displayTime = timeDiff.toFixed()
+        if (displayTime === "0") {
+            displayTime = "Now"
+        } else if (isMinutes === true) {
+            displayTime = displayTime + "mins ago..."
+        } else {
+            displayTime = displayTime + "s ago..."
+        }
+        console.log(timeDiff, displayTime)
         let formatObj = {
             ...obj, 
-            timestamp: (displayTime.toFixed() === "0") ? "Now" : displayTime.toFixed() + "s ago...", 
+            timestamp: displayTime,
             accuracy: ("move" in obj) ? obj.accuracy + "%" : "-"
         }
         return formatObj
