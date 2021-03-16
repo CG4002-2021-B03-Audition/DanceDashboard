@@ -49,6 +49,7 @@ const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, sessionId}) => {
                     duration: 9000,
                     isClosable: true,
                 })
+                onClose()
             } else {
                 toast({
                     title: "Session is already saved!",
@@ -69,6 +70,7 @@ const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, sessionId}) => {
                 const buttonColor = (isSelected[i] ? "green.100" : "gray.100")
                 return (
                     <Button 
+                        key={action.timestamp}
                         variant="solid" 
                         w="15%"
                         rounded="md" 

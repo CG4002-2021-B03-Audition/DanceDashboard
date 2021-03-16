@@ -21,7 +21,7 @@ const SensorPanel: React.FC<Props> = (props) => {
                 <Stack isInline={true}>
                     {["x", "y", "z"].map((datapoint : any) => {
                         return (
-                            <Container>
+                            <Container key={datapoint}>
                                 <SensorChart dancerId={props.dancerId} datapoint={datapoint} size={props.dataSize}/>           
                             </Container>
                         )
@@ -39,7 +39,7 @@ const SensorPanel: React.FC<Props> = (props) => {
                 <Stack isInline={true} >
                     {["yaw", "pitch", "roll"].map((datapoint : any) => {
                         return (
-                            <Container>
+                            <Container key={datapoint}>
                                 <SensorChart dancerId={props.dancerId} datapoint={datapoint} size={props.dataSize}/>           
                             </Container>
                         )
