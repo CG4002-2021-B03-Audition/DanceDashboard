@@ -60,5 +60,6 @@ class Socket {
 
 console.log(process.env)
 let moveSocket = new Socket("ws://localhost:8080/ws")
+let imuSocket = new Socket("ws://localhost:8080/imu")
 
-export { moveSocket }
+export { moveSocket, imuSocket }
