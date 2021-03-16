@@ -21,3 +21,22 @@ type DanceAction struct {
 	Accuracy  float64   `json:"accuracy"`
 	Timestamp time.Time `json:"timestamp"`
 }
+
+type IMUData struct {
+	Timestamp time.Time `json:"timestamp"`
+	X         int       `json:"accelX"`
+	Y         int       `json:"accelY"`
+	Z         int       `json:"accelZ"`
+	Yaw       int       `json:"gyroYaw"`
+	Pitch     int       `json:"gyroPitch"`
+	Roll      int       `json:"gyroRoll"`
+	DancerID  int       `json:"dancerId"`
+}
+
+type Result struct {
+	Name      string  `json:"name" binding:"required"`
+	Delay     float64 `json:"delay" binding:"required"`
+	Accuracy  float64 `json:"accuracy" binding:"required"`
+	Timestamp string  `json:"timestamp" binding:"required"`
+	IsCorrect bool    `json:"isCorrect" binding:"required"`
+}
