@@ -1,30 +1,44 @@
-import { Badge, Box, Button, Stack } from '@chakra-ui/react';
-import React from 'react'
+import { Badge, Box, Button, Stack, useDisclosure } from '@chakra-ui/react';
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { moveSocket } from '../../socket';
+import { moveSocket, imuSocket } from '../../socket';
 import { ws_reset_state } from '../../store/ws/actions';
 import MenuItem from './MenuItem';
+import { fetchLastSession } from '../../apiCalls';
+import SessionSummaryModal from '../Modal/SessionSummaryModal';
 
 interface Props {
     isOpen: boolean
     isOnline: boolean
 }
 
-const MenuLinks = ({isOpen, isOnline, ...props}: Props & $ElementProps<typeof Box>) => {
+const MenuLinks = (props: Props & $ElementProps<typeof Box>) => {
     const dispatch = useDispatch()
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [ sessionId, setSessionId ] = useState()
     const handleConnect = () => {
         // add action here to clean state
         dispatch(ws_reset_state())
         moveSocket.connect()
+        imuSocket.connect()
     }
 
-    const handleDisconnect = () => {
+    const handleDisconnect = async () => {
         moveSocket.disconnect()
+        imuSocket.disconnect()
+
+        // show summary modal upon session stop!
+        onOpen()
+        const resp = await fetchLastSession()
+        if (resp.data.success) {
+            setSessionId(resp.data.message.sid)
+        }
+
     }
 
     return (
         <Box
-            display={{ base: isOpen ? "block" : "none", md: "block"}}
+            display={{ base: props.isOpen ? "block" : "none", md: "block"}}
             {...props}
         >
             <Stack
@@ -37,15 +51,16 @@ const MenuLinks = ({isOpen, isOnline, ...props}: Props & $ElementProps<typeof Bo
                 <Button onClick={handleConnect}>Start dance session!</Button>
                 <Button onClick={handleDisconnect}>Stop dance session!</Button>
                 <Badge 
-                    colorScheme={isOnline ? "green" : "pink"}
+                    colorScheme={props.isOnline ? "green" : "pink"}
                     variant="subtle"
                     size="ml"
                 >
-                    {isOnline ? "Online" : "Offline"}
+                    {props.isOnline ? "Online" : "Offline"}
                 </Badge>
                 <MenuItem to="/live">Live</MenuItem>
-                <MenuItem to="/stats" isOnline={isOnline}>Statistics</MenuItem>
+                <MenuItem to="/stats" isOnline={props.isOnline}>Statistics</MenuItem>
             </Stack>
+            <SessionSummaryModal isOpen={isOpen} onClose={onClose} sessionId={sessionId}/>
         </Box>
     )
 }
