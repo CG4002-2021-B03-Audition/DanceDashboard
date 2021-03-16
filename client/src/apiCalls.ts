@@ -16,6 +16,11 @@ const fetchAllSessions = async (data? : any) => {
     return resp
 }
 
+const fetchLastSession = async () => {
+    const resp = await axios.get(api.getLatestSession)
+    return resp
+}
+
 // getMovesInSession: (sid: number) => `${BASE_URL}/moves/${sid}`,
 
 const fetchDataInSession = async (sid : number) => {
@@ -26,8 +31,17 @@ const fetchMoveBreakdown = async (sid : number) => {
     return await axios.get(api.getMoveBreakdown(sid))
 }
 
+const sendSessionResult = async (data : any, sid : number) => {
+    const resp = await axios.post(api.sendSessionResult(sid), {
+        actions: data
+    })
+    return resp
+}
+
 export {
+    fetchLastSession,
     fetchAllSessions,
     fetchDataInSession,
     fetchMoveBreakdown,
+    sendSessionResult,
 }
