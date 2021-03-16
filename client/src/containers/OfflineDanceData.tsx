@@ -1,35 +1,31 @@
 import { QuestionOutlineIcon } from '@chakra-ui/icons';
 import { Container, Divider, Stack, Switch, Text, Tooltip } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { getSessionResult } from '../apiCalls';
 import BasicTable from '../components/Tables/BasicTable';
+import { Session } from '../store/session/types';
 import { sortByTimeStampOldest } from '../utils';
 
 interface Props {
     danceData: never[]
+    session: Session | undefined
 }
 
-const selectActual = (state : any) => state.liveStore.actualMoves
-
-const OfflineDanceData: React.FC<Props> = ({ danceData }) => {
+const OfflineDanceData: React.FC<Props> = ({ danceData, session }) => {
     const [ isWrong, setIsWrong ] = useState<boolean[]>()
     const [ showWrongMoves, setShowWrongMoves ] = useState<boolean>(false)
     const [ rows, setRows ] = useState<any>([])
-    // To be refactored when actual dance data can be sent
-    const actualActions = useSelector(selectActual)
 
     useEffect(() => {
-        let currentScore : boolean[] = []
-        danceData.forEach((action : any, index : number) => {
-            if(action.name === actualActions[index % actualActions.length]) {
-                currentScore.push(false)
-            } else {
-                currentScore.push(true)
-            }
-        })
-
-        setIsWrong([...currentScore])
-    }, [danceData, actualActions])
+        async function getSessionData(session : Session) {
+            const resp = await getSessionResult(session.sid)
+            if (resp.data.success && resp.data.message !== null) {
+                const results = resp.data.message.map((result : any) => !result.isCorrect)
+                setIsWrong(results)
+            } 
+        }
+        if (session !== undefined) { getSessionData(session) }
+    }, [session, danceData])
 
     useEffect(() => {
         const formatData = danceData.sort(sortByTimeStampOldest).map((obj : any) => {

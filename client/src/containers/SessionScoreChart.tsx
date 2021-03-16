@@ -1,31 +1,42 @@
 import { QuestionOutlineIcon } from '@chakra-ui/icons';
 import { CircularProgress, CircularProgressLabel, Container, Divider, Stack, Text, Tooltip } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { Session } from '../store/session/types';
 import { getProgressColor } from '../utils';
+import { getSessionResult } from '../apiCalls'
 
 interface Props {
-    danceData : never[]
+    session: Session | undefined
 }
 
-const selectActual = (state : any) => state.liveStore.actualMoves
-
-const SessionScoreChart: React.FC<Props> = ({ danceData }) => {
-    // To be refactored when actual dance data can be sent
-    const actualActions = useSelector(selectActual)
+const SessionScoreChart: React.FC<Props> = ({ session }) => {
     const [ scores, setScores ] = useState<number[]>([0, 1])
+    const [ sessionData, setSessionData ] = useState<any[]>([])
+
     useEffect(() => {
-        let totalScore = danceData.length
-        let currentScore = 0
-
-        danceData.forEach((action : any, index : number) => {
-            if(action.name === actualActions[index % actualActions.length]) {
-                currentScore += 1
-            } 
-        })
-
-        setScores([currentScore, totalScore])
-    }, [danceData, actualActions])
+        async function getSessionData(session : Session) {
+            const resp = await getSessionResult(session.sid)
+            if (resp.data.success && resp.data.message !== null) {
+                const results = [...resp.data.message]
+                const totalScore = results.length
+                setSessionData(results)
+                if (totalScore !== 0) {
+                    let currentScore = 0
+                    results.forEach((result : any) => {
+                        if (result.isCorrect) {
+                            currentScore += 1
+                        }
+                    })
+                    console.log("Current score: ", currentScore, totalScore)
+                    setScores([currentScore, totalScore])
+                }
+            } else {
+                setSessionData([])
+                setScores([0, 1])
+            }
+        }
+        if (session !== undefined) { getSessionData(session) }
+    }, [session])
 
     const calculateScore = () => {
         if(scores[0] === 0) return 0
@@ -45,7 +56,7 @@ const SessionScoreChart: React.FC<Props> = ({ danceData }) => {
                 <CircularProgress value={calculateScore()} size={72} color={getProgressColor(calculateScore())}>
                     <CircularProgressLabel>
                         <Text>
-                            {`${scores[0]} / ${scores[1]}`}
+                            {(sessionData.length === 0) ? "-" : `${scores[0]} / ${scores[1]}`}
                         </Text>
                         <Text fontWeight="bold">
                             actions were correct!
