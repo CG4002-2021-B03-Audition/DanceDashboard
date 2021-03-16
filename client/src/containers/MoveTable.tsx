@@ -28,7 +28,7 @@ const MoveTable = () => {
             isMinutes = true
         }
         let displayTime = timeDiff.toFixed()
-        if (displayTime === "0") {
+        if (timeDiff <= 0) {
             displayTime = "Now"
         } else if (isMinutes === true) {
             displayTime = displayTime + "mins ago..."

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { getProgressColor } from '../utils';
 
 interface Props {
-    danceData : never[]
+    danceData : any[]
 }
 
 
