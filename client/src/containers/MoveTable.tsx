@@ -35,7 +35,7 @@ const MoveTable = () => {
         } else {
             displayTime = displayTime + "s ago..."
         }
-        console.log(timeDiff, displayTime)
+
         let formatObj = {
             ...obj, 
             timestamp: displayTime,
