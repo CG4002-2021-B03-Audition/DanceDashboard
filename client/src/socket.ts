@@ -3,11 +3,15 @@ import { imu_message, ws_move_connect, ws_move_message, WS_NEXT_ACTUAL, ws_pos_m
 
 class Socket {
     ws: WebSocket | undefined;
-    endpoint: string
+    endpoint: string;
+    stopSound: HTMLAudioElement;
+    startSound: HTMLAudioElement;
 
     constructor(endpoint: string) {
         // this.ws = new WebSocket(endpoint)
         this.endpoint = endpoint
+        this.stopSound = new Audio("https://freesound.org/data/previews/344/344051_950925-lq.mp3")
+        this.startSound = new Audio("https://freesound.org/data/previews/457/457968_2841496-lq.mp3")
     }
 
     connect() {
@@ -27,10 +31,13 @@ class Socket {
             let type = data.type 
             if (type === "move") {
                 store.dispatch(ws_move_message(data))
+                this.stopSound.play()
+                setTimeout(() => this.startSound.play(), 2000)
             } else if (type === "position") {
                 store.dispatch(ws_pos_message(data))
+                this.stopSound.play()
+                setTimeout(() => this.startSound.play(), 2000)
             } else if (type === "imu") {
-                // console.log(data)
                 store.dispatch(imu_message(data))
             }
             // store.dispatch({ type: WS_NEXT_ACTUAL, payload: 1}) // for week 7
