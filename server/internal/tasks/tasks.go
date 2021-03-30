@@ -162,6 +162,18 @@ func (task *Tasks) SendIMUData(msg amqp.Delivery) (bool, error) {
 	return true, nil
 }
 
+// SendFlag is a custom task for the worker to send a start/stop/finished flag to the client
+func (task *Tasks) SendFlag(msg amqp.Delivery) (bool, error) {
+	if isValid, err := validateTask(task, msg); !isValid {
+		return isValid, err
+	}
+	fmt.Println(string(msg.Body))
+	message := ws.Message{Body: string(msg.Body)}
+	task.Pool.Broadcast <- message
+
+	return true, nil
+}
+
 /*
 GenerateDanceData returns a slice of maps which contain the fake moves and positions data
 */

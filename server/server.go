@@ -82,6 +82,12 @@ func serveWs(wsType string, task *tasks.Tasks, w http.ResponseWriter, r *http.Re
 		if err != nil {
 			panic(err)
 		}
+	} else if wsType == "flags" {
+		// start worker for start/stop/finished flags
+		err = worker.StartWorker("flags", "flags", "events", 1)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	go client.CheckConn()
@@ -127,8 +133,10 @@ func main() {
 	// initialise websocket routes
 	actionPool := ws.NewPool()
 	imuPool := ws.NewPool()
+	flagPool := ws.NewPool()
 	go actionPool.Start()
 	go imuPool.Start()
+	go flagPool.Start()
 
 	// initialise tasks
 	actionTask := tasks.Tasks{
@@ -137,6 +145,11 @@ func main() {
 	}
 	imuTask := tasks.Tasks{
 		Pool:   imuPool,
+		DbConn: db,
+	}
+
+	flagTask := tasks.Tasks{
+		Pool:   flagPool,
 		DbConn: db,
 	}
 
@@ -152,6 +165,10 @@ func main() {
 
 	router.GET("/imu", func(c *gin.Context) {
 		serveWs("imu", &imuTask, c.Writer, c.Request, &amqpConn)
+	})
+
+	router.GET("/flags", func(c *gin.Context) {
+		serveWs("flags", &flagTask, c.Writer, c.Request, &amqpConn)
 	})
 
 	router.POST("/login", func(c *gin.Context) {
