@@ -6,7 +6,7 @@ class Socket {
     endpoint: string;
 
     constructor(endpoint: string) {
-        // this.ws = new WebSocket(endpoint)
+        this.ws = new WebSocket(endpoint)
         this.endpoint = endpoint
     }
 
