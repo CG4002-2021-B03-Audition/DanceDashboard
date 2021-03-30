@@ -1,4 +1,4 @@
-import { Container, Stack, Text } from '@chakra-ui/layout'
+import { Container, Grid, GridItem, Stack, Text } from '@chakra-ui/layout'
 import React from 'react'
 import SensorChart from '../containers/SensorChart'
 
@@ -10,42 +10,33 @@ interface Props {
 const SensorPanel: React.FC<Props> = (props) => {
     return (
         <>
-            <Stack
+            <Grid  
                 border="1px" 
                 borderColor="gray.100" 
+                templateRows="repeat(1)"
+                templateColumns="repeat(3, 1fr)"
                 rounded="md" 
                 m={8} 
                 p ={4}
             >
-                <Text>Accelerometer Readings</Text>
-                <Stack isInline={true}>
-                    {["x", "y", "z"].map((datapoint : any) => {
-                        return (
-                            <Container key={datapoint}>
-                                <SensorChart dancerId={props.dancerId} datapoint={datapoint} size={props.dataSize}/>           
-                            </Container>
-                        )
-                    })}
-                </Stack>
-            </Stack>
-            <Stack
-                border="1px" 
-                borderColor="gray.100" 
-                rounded="md" 
-                m={8} 
-                p ={4}
-            >
-                <Text>Gyroscope Readings</Text>
-                <Stack isInline={true} >
-                    {["yaw", "pitch", "roll"].map((datapoint : any) => {
-                        return (
-                            <Container key={datapoint}>
-                                <SensorChart dancerId={props.dancerId} datapoint={datapoint} size={props.dataSize}/>           
-                            </Container>
-                        )
-                    })}
-                </Stack>
-            </Stack>
+                <GridItem colSpan={3}>Accelerometer Readings</GridItem>
+                {["x", "y", "z"].map((datapoint : any) => {
+                    return (
+                        <GridItem colSpan={1} key={datapoint}>
+                            <SensorChart dancerId={props.dancerId} datapoint={datapoint} size={props.dataSize}/>           
+                        </GridItem>
+                    )
+                })}
+                <GridItem colSpan={3}>Gyroscope Readings</GridItem>
+                {["yaw", "pitch", "roll"].map((datapoint : any) => {
+                    return (
+                        <GridItem colSpan={1}>
+                            <SensorChart dancerId={props.dancerId} datapoint={datapoint} size={props.dataSize}/>           
+                        </GridItem>
+                    )
+                })}
+                
+            </Grid>
         </>
     )
 }

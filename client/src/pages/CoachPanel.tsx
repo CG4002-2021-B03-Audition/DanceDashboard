@@ -12,7 +12,7 @@ interface Props {}
 
 const CoachPanel: React.FC<Props> = () => {
     const [size, setSize] = useState(10)
-    const [avatarSize, setAvatarSize] = useState(["lg", "md", "md"])
+    const [avatarSize, setAvatarSize] = useState(["xl", "md", "md"])
 
     return (
         <>
@@ -24,18 +24,18 @@ const CoachPanel: React.FC<Props> = () => {
                 colorScheme="purple"
             >
                 <TabList mb="1em">
-                    <Tab onClick={()=>setAvatarSize(["lg", "md", "md"])}>
+                    <Tab onClick={()=>setAvatarSize(["xl", "md", "md"])}>
                         <Avatar size={avatarSize[0]} bg="purple.200" name="Dancer1" src={Dancer1}/>
                     </Tab>
-                    <Tab onClick={()=>setAvatarSize(["md", "lg", "md"])}>
+                    <Tab onClick={()=>setAvatarSize(["md", "xl", "md"])}>
                         <Avatar size={avatarSize[1]} bg="purple.200" name="Dancer2" src={Dancer2}/>
                     </Tab>
-                    <Tab onClick={()=>setAvatarSize(["md", "md", "lg"])}>
+                    <Tab onClick={()=>setAvatarSize(["md", "md", "xl"])}>
                         <Avatar size={avatarSize[2]} bg="purple.200" name="Dancer3" src={Dancer3}/>
                     </Tab>
                 </TabList>
-                <Container centerContent>
-                    <Text>{size}</Text>
+                <Container centerContent p={4} bgColor="gray.200" rounded="md" >
+                    <Text mb={2} letterSpacing={1} color="black" fontStyle="bold">DATAPOINTS: {size}</Text>
                     <Slider 
                         aria-label="slider-ex-1" 
                         value={size} 
@@ -46,7 +46,7 @@ const CoachPanel: React.FC<Props> = () => {
                         focusThumbOnChange={false}
                         colorScheme="purple"
                     >
-                        <SliderTrack>
+                        <SliderTrack bgColor="white">
                             <SliderFilledTrack/>
                         </SliderTrack>
                         <SliderThumb/>
