@@ -1,7 +1,7 @@
 import { Badge, Box, Button, Stack, useDisclosure } from '@chakra-ui/react';
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { moveSocket, imuSocket, flagSocket } from '../../socket';
+import { moveSocket, imuSocket, flagSocket, emgSocket } from '../../socket';
 import { ws_reset_state } from '../../store/ws/actions';
 import MenuItem from './MenuItem';
 import { fetchLastSession } from '../../apiCalls';
@@ -21,13 +21,13 @@ const MenuLinks = (props: Props & $ElementProps<typeof Box>) => {
         dispatch(ws_reset_state())
         moveSocket.connect()
         imuSocket.connect()
-        flagSocket.connect()
+        emgSocket.connect()
     }
 
     const handleDisconnect = async () => {
         moveSocket.disconnect()
         imuSocket.disconnect()
-        flagSocket.disconnect()
+        emgSocket.disconnect()
 
         // show summary modal upon session stop!
         onOpen()
