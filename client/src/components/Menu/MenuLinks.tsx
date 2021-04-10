@@ -1,7 +1,7 @@
 import { Badge, Box, Button, Stack, useDisclosure } from '@chakra-ui/react';
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { moveSocket, imuSocket, flagSocket, emgSocket } from '../../socket';
+import { moveSocket, imuSocket, emgSocket } from '../../socket';
 import { ws_reset_state } from '../../store/ws/actions';
 import MenuItem from './MenuItem';
 import { fetchLastSession } from '../../apiCalls';
