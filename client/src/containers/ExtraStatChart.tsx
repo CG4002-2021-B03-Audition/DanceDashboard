@@ -7,12 +7,13 @@ interface Props {
     danceData : any[]
 }
 
+const TOTAL_DANCE_MOVES = 12
 
 const ExtraStatChart: React.FC<Props> = ({danceData}) => {
     const [ avgDelay, setAvgDelay ] = useState<number>(0)
     const [ avgAccuracy, setAvgAccuracy ] = useState<number>(0)
     useEffect(() => {
-        let numDanceData = danceData.length
+        // let numDanceData = danceData.length
         let totalDelay = 0
         let totalAccuracy = 0
         let numMoves = 0
@@ -25,7 +26,7 @@ const ExtraStatChart: React.FC<Props> = ({danceData}) => {
             }
         })
 
-        setAvgDelay(totalDelay/numDanceData)
+        setAvgDelay(totalDelay/TOTAL_DANCE_MOVES)
         setAvgAccuracy(totalAccuracy/numMoves * 100)
     }, [danceData])
 
@@ -37,8 +38,8 @@ const ExtraStatChart: React.FC<Props> = ({danceData}) => {
                         <Tooltip label="Average time difference between the first dancer to perform the move and the last.">
                             <QuestionOutlineIcon boxSize="0.8em"/>
                         </Tooltip>
-                        <Text fontWeight="bold" fontSize={24}>
-                            Avg Delay
+                        <Text size="20" fontWeight="bold" fontSize={24} margin="auto" maxWidth="50%" noOfLines={2}>
+                            Avg Move Delay
                         </Text>
                         <Text fontSize={24}>
                             {avgDelay ? avgDelay.toFixed(2) : 0} ms
