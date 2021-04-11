@@ -78,6 +78,8 @@ func (worker *Worker) StartWorker(
 			go worker.imuThread(i, msgs)
 		} else if queueName == "flags" {
 			go worker.flagsThread(i, msgs)
+		} else if queueName == "emg_data" {
+			go worker.emgThread(i, msgs)
 		}
 	}
 	return nil
@@ -135,6 +137,25 @@ func (worker *Worker) flagsThread(threadNum int, msgs <-chan amqp.Delivery) {
 		var isDone bool
 		var err error
 		isDone, err = worker.Tasks.SendFlag(msg)
+		if isDone && err == nil {
+			fmt.Printf("Thread %v: ", threadNum)
+			msg.Ack(false)
+		} else if !isDone && err == nil {
+			// negative ACK and requeue message
+			msg.Nack(false, true)
+		} else if err != nil {
+			fmt.Printf("Worker stopped: %v\n", err)
+			break
+		}
+		fmt.Println("Flag data consumer closed - client socket disconnected or amqp error!")
+	}
+}
+
+func (worker *Worker) emgThread(threadNum int, msgs <-chan amqp.Delivery) {
+	for msg := range msgs {
+		var isDone bool
+		var err error
+		isDone, err = worker.Tasks.SendEmg(msg)
 		if isDone && err == nil {
 			fmt.Printf("Thread %v: ", threadNum)
 			msg.Ack(false)
