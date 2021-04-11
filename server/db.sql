@@ -17,6 +17,7 @@ CREATE TABLE Dancers (
 CREATE TABLE Sessions (
     sid bigserial,
     aid int not null references Accounts(id),
+    name varchar(50),
     timestamp date,
     primary key (aid, sid)
 );

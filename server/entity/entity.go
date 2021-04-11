@@ -12,6 +12,7 @@ type Move struct {
 type Session struct {
 	Sid       int       `json:"sid"`
 	Aid       int       `json:"aid"`
+	Name      string    `json:"name"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
