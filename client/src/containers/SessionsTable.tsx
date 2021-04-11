@@ -12,7 +12,7 @@ interface Props {
 const selectSessions = (state : any) => {
     return state.sessionStore.sessions.filter((session : Session) => {
         if (state.sessionStore.searchText.length === 0) return true
-        return session.sid.toString() === state.sessionStore.searchText
+        return ("Session " + session.name.toString()).includes(state.sessionStore.searchText)
     })
 }
 const getSearchText = (state : any) => state.sessionStore.searchText
@@ -30,7 +30,7 @@ const SessionsTable: React.FC<Props> = ({ onClick }) => {
                     textAlign="center" 
                     onClick={() => onClick(session)}
                 >
-                    {`#${session.sid}`}
+                    {`${session.name}`}
                 </Text>
             </Box>
         )
