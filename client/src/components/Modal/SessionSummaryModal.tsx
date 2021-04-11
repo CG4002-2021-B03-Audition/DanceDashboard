@@ -1,31 +1,39 @@
 import { Button } from '@chakra-ui/button';
-import { Divider, Text } from '@chakra-ui/layout';
+import { Input } from '@chakra-ui/input';
+import { Divider, Stack, Text } from '@chakra-ui/layout';
 import { useToast } from '@chakra-ui/toast';
 import React, { useEffect, useState } from 'react'
-import { fetchDataInSession, sendSessionResult } from '../../apiCalls';
+import { fetchDataInSession, sendSessionResult, updateSessionName } from '../../apiCalls';
+import EMGChart from '../../containers/EMGChart';
 import ExtraStatChart from '../../containers/ExtraStatChart';
+import { Session } from '../../store/session/types';
 import BaseModal from './BaseModal';
 
 interface Props {
     isOpen: boolean
     onClose: any
-    sessionId: number | undefined
+    session: Session | undefined
 }
-const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, sessionId}) => {
+
+const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, session}) => {
     const [danceActions, setDanceActions] = useState<any[]>([])
+    const [sessionName, setSessionName] = useState<string>("")
     const [isSelected, setSelected] = useState<any[]>([])
     const toast = useToast()
     useEffect(() => {
         async function getDanceActions(sessionId : number) {
-            
             const resp = await fetchDataInSession(sessionId)
             if (resp.data.success && resp.data.message !== null) {
                 setDanceActions([...resp.data.message])
                 setSelected([...resp.data.message.map(() => false)])
             }
         }
-        if (sessionId !== undefined) { getDanceActions(sessionId) }
-    }, [sessionId])
+        if (session !== undefined) { getDanceActions(session.sid) }
+    }, [session])
+
+    const handleNameChange = (event : any) => {
+        setSessionName(event.target.value)
+    }
 
     const handleClick = (i : number) => {
         let items = [...isSelected]
@@ -39,10 +47,18 @@ const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, sessionId}) => {
             item.isCorrect = isSelected[index] 
         })
 
-        if (sessionId !== undefined) {
-            const resp = await sendSessionResult(items, sessionId)
+        if (session !== undefined) {
+            let updateSuccess = true
+            if (sessionName !== "") {
+                const updateResp = await updateSessionName({
+                    sid: session.sid,
+                    name: sessionName,
+                })
+                updateSuccess = (updateResp.data.success) ? true : false
+            }
             
-            if (resp.data.success) {
+            const resp = await sendSessionResult(items, session.sid)
+            if (resp.data.success && updateSuccess) {
                 toast({
                     title: "Session saved.",
                     status: "success",
@@ -63,6 +79,10 @@ const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, sessionId}) => {
 
     return (
         <BaseModal isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit} modalTitle="Session Summary" modalSize="5xl">
+            <Text textAlign="center" fontWeight="bold" letterSpacing="wide"> SESSION NAME </Text>
+            <Text textAlign="center" fontSize="xs" letterSpacing="wider"> enter the name of this session </Text>
+            <Input placeholder="e.g. Dynamite BTS Best Dance!" size="lg" onChange={handleNameChange} value={sessionName}/>
+            <Divider m={2}/>
             <Text textAlign="center" fontWeight="bold" letterSpacing="wide"> MOVES COMPLETED </Text>
             <Text textAlign="center" fontSize="xs" letterSpacing="wider"> select all moves that were correct </Text>
             <Divider m={2}/>
@@ -86,7 +106,10 @@ const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, sessionId}) => {
             })}
             <Text textAlign="center" fontWeight="bold" letterSpacing="wide" m={4}> PERFORMANCE </Text>
             <Divider m={2}/>
-            <ExtraStatChart danceData={danceActions}/>
+            <Stack justify="center" isInline spacing={6}>
+                <ExtraStatChart danceData={danceActions}/>
+                {/* <EMGChart/> */}
+            </Stack>
         </BaseModal>
     )
 }

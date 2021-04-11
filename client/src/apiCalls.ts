@@ -16,6 +16,18 @@ const fetchAllSessions = async (data? : any) => {
     return resp
 }
 
+const updateSessionName = async (data : any) => {
+    const { sid, name } = data
+    const resp = await axios({
+        url: api.updateSessionName(sid),
+        method: 'patch',
+        params: {
+            name: name
+        }
+    })
+    return resp
+}
+
 const fetchLastSession = async () => {
     const resp = await axios.get(api.getLatestSession)
     return resp
@@ -44,6 +56,7 @@ const getSessionResult = async (sid : number) => {
 }
 
 export {
+    updateSessionName,
     fetchLastSession,
     fetchAllSessions,
     fetchDataInSession,
