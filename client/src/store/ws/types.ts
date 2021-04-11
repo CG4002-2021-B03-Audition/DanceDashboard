@@ -1,4 +1,4 @@
-import { WS_MOVE_CONNECT, WS_MOVE_MESSAGE, WS_NEXT_ACTUAL, WS_POS_MESSAGE, WS_RESET_STATE } from "./actions"
+import { IMU_MESSAGE, EMG_MESSAGE, WS_MOVE_CONNECT, WS_MOVE_MESSAGE, WS_NEXT_ACTUAL, WS_POS_MESSAGE, WS_RESET_STATE } from "./actions"
 
 export interface Move {
     move: string
@@ -35,8 +35,6 @@ interface WsNextActual {
 
 export type WsActionTypes = WsMoveConnect | WsMoveMessage | WsPosMessage | WsNextActual
 
-import { IMU_MESSAGE } from "./actions"
-
 export interface IMU {
     x: number
     y: number
@@ -55,6 +53,12 @@ interface IMUData {
 
 export type IMUDataType = IMUData
 
+interface EMGData {
+    type: typeof EMG_MESSAGE
+    payload: number
+}
+export type EMGDataType = EMGData
+
 export interface WsResetState {
     type: typeof WS_RESET_STATE
     payload: ""
@@ -71,5 +75,6 @@ export interface WsState {
         0: IMU[]
         1: IMU[]
         2: IMU[]
-    }
+    },
+    emg: number,
 }

@@ -14,6 +14,7 @@ export interface SearchTextType {
 export interface Session {
     sid: number
     aid: number
+    name: string
     timestamp: Date
 }
 

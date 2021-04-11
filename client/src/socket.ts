@@ -97,7 +97,11 @@ class IMUSocket extends Socket {
             // dispatch action to update state whenever socket receives a message
             let obj = JSON.parse(msg.data)
             let data = JSON.parse(obj.body)
-            store.dispatch(imu_message(data))
+            let type = data.type 
+            console.log("IMU Socket: ", data)
+            if (type === "imu") {
+                store.dispatch(imu_message(data))
+            }
         }
         this.ws.onclose = event => {
             console.log("Socket closed connection: ", event);
