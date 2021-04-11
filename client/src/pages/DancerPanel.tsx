@@ -2,6 +2,7 @@ import { Container, Stack } from '@chakra-ui/layout'
 import React from 'react'
 import DancePositions from '../containers/DancePositions'
 import DelayChart from '../containers/DelayChart'
+import EMGChart from '../containers/EMGChart'
 import MovePredictionChart from '../containers/MovePredictionChart'
 import MoveTable from '../containers/MoveTable'
 
@@ -39,6 +40,9 @@ const DancerPanel: React.FC = () => {
                 </Container>
                 <Container h={96} overflowY="auto" centerContent>
                     <MoveTable/>
+                </Container>
+                <Container h={96} overflowY="auto" centerContent>
+                    <EMGChart/>
                 </Container>
             </Stack>
         </>
