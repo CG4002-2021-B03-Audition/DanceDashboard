@@ -15,7 +15,7 @@ interface Props {
 const MenuLinks = (props: Props & $ElementProps<typeof Box>) => {
     const dispatch = useDispatch()
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [ sessionId, setSessionId ] = useState()
+    const [ session, setSession ] = useState()
     const handleConnect = () => {
         // add action here to clean state
         dispatch(ws_reset_state())
@@ -33,7 +33,7 @@ const MenuLinks = (props: Props & $ElementProps<typeof Box>) => {
         onOpen()
         const resp = await fetchLastSession()
         if (resp.data.success) {
-            setSessionId(resp.data.message.sid)
+            setSession({...resp.data.message})
         }
 
     }
@@ -62,7 +62,7 @@ const MenuLinks = (props: Props & $ElementProps<typeof Box>) => {
                 <MenuItem to="/live">Live</MenuItem>
                 <MenuItem to="/stats" isOnline={props.isOnline}>Statistics</MenuItem>
             </Stack>
-            <SessionSummaryModal isOpen={isOpen} onClose={onClose} sessionId={sessionId}/>
+            <SessionSummaryModal isOpen={isOpen} onClose={onClose} session={session}/>
         </Box>
     )
 }
