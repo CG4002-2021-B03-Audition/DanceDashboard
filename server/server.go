@@ -2,10 +2,13 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/CG4002-2021-B03-Audition/Dashboard/server/controller"
@@ -60,11 +63,12 @@ func serveWs(wsType string, task *tasks.Tasks, w http.ResponseWriter, r *http.Re
 		}
 		// increment session id to create a new session
 		task.SessionID = task.SessionID + 1
-		queryString := `insert into sessions (sid, aid, timestamp) values ($1, $2, $3)`
+		queryString := `insert into sessions (sid, aid, name, timestamp) values ($1, $2, $3, $4)`
 		res, err := task.DbConn.Exec(
 			queryString,
 			task.SessionID,
 			1, // hack because Accounts is not set up yet
+			time.Now().Format("2006-01-02 15:04:05"),
 			time.Now().Format("2006-01-02 15:04:05"),
 		)
 		if err != nil {
@@ -85,6 +89,12 @@ func serveWs(wsType string, task *tasks.Tasks, w http.ResponseWriter, r *http.Re
 	} else if wsType == "flags" {
 		// start worker for start/stop/finished flags
 		err = worker.StartWorker("flags", "flags", "events", 1)
+		if err != nil {
+			panic(err)
+		}
+	} else if wsType == "emg" {
+		// start worker for start/stop/finished flags
+		err = worker.StartWorker("emg_data", "emg_data", "events", 1)
 		if err != nil {
 			panic(err)
 		}
@@ -134,9 +144,11 @@ func main() {
 	actionPool := ws.NewPool()
 	imuPool := ws.NewPool()
 	flagPool := ws.NewPool()
+	emgPool := ws.NewPool()
 	go actionPool.Start()
 	go imuPool.Start()
 	go flagPool.Start()
+	go emgPool.Start()
 
 	// initialise tasks
 	actionTask := tasks.Tasks{
@@ -150,6 +162,11 @@ func main() {
 
 	flagTask := tasks.Tasks{
 		Pool:   flagPool,
+		DbConn: db,
+	}
+
+	emgTask := tasks.Tasks{
+		Pool:   emgPool,
 		DbConn: db,
 	}
 
@@ -169,6 +186,10 @@ func main() {
 
 	router.GET("/flags", func(c *gin.Context) {
 		serveWs("flags", &flagTask, c.Writer, c.Request, &amqpConn)
+	})
+
+	router.GET("/emg", func(c *gin.Context) {
+		serveWs("emg", &emgTask, c.Writer, c.Request, &amqpConn)
 	})
 
 	router.POST("/login", func(c *gin.Context) {
@@ -225,7 +246,9 @@ func main() {
 		defer tx.Rollback()
 		stmt, err := tx.Prepare(`
 		insert into results (sid, aid, action, delay, accuracy, timestamp, isCorrect) 
-		values ($1, $2, $3, $4, $5, $6, $7)`)
+		values ($1, $2, $3, $4, $5, $6, $7)
+		on conflict (sid, aid, timestamp)
+		do update set isCorrect = $7`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -266,6 +289,29 @@ func main() {
 		})
 	})
 
+	router.PATCH("/sessions/:sid", func(ctx *gin.Context) {
+		sid := ctx.Param("sid")
+		params := ctx.Request.URL.Query()
+		sessionName := params["name"][0]
+		queryString := "update sessions set name = $1 where sid = $2"
+		_, err := db.Exec(
+			queryString,
+			sessionName,
+			sid,
+		)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"success": false,
+				"message": err,
+			})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{
+				"success": true,
+				"message": "Session name updated!",
+			})
+		}
+	})
+
 	router.GET("/lastSession", func(ctx *gin.Context) {
 		params := ctx.Request.URL.Query()
 		queryResult, err := sessionController.GetLatest(db, params)
@@ -285,28 +331,35 @@ func main() {
 	// router.GET("/session/:id", func(c *gin.Context) {
 	// })
 
-	// router.POST("/session/:id", func(c *gin.Context) {
-	// })
-
 	// For week 7: fake publisher to send dance position info
-	// go func() {
-	// 	fmt.Println("Publisher started...")
-	// 	danceData := tasks.GenerateDanceData()
-	// 	fmt.Println(danceData)
-	// 	for i := 0; i < len(danceData); i++ {
-	// 		data := danceData[i]
-	// 		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-	// 		fmt.Printf("Timestamp: %v\n", timestamp)
-	// 		data["timestamp"] = timestamp
-	// 		dataToBytes, _ := json.Marshal(data)
-	// 		amqpConn.Publish(
-	// 			"action",
-	// 			dataToBytes,
-	// 		)
-	// 		time.Sleep(time.Second * 3)
-	// 	}
-	// 	fmt.Println("Finished publishing messages...")
-	// }()
+	go func() {
+		fmt.Println("Publisher started...")
+		danceData := tasks.GenerateDanceData()
+		fmt.Println(danceData)
+		for i := 0; i < len(danceData); i++ {
+			data := danceData[i]
+			timestamp := strconv.FormatInt(time.Now().Unix(), 10)
+			fmt.Printf("Timestamp: %v\n", timestamp)
+			data["timestamp"] = timestamp
+			dataToBytes, _ := json.Marshal(data)
+			amqpConn.Publish(
+				"action",
+				dataToBytes,
+			)
+
+			// send emg data
+			emg_val := make(map[string]interface{})
+			emg_val["type"] = "emg"
+			emg_val["value"] = rand.Intn(100)
+			emgDataToBytes, _ := json.Marshal(emg_val)
+			amqpConn.Publish(
+				"emg_data",
+				emgDataToBytes,
+			)
+			time.Sleep(time.Second * 3)
+		}
+		fmt.Println("Finished publishing messages...")
+	}()
 
 	router.Run(":8080")
 }
