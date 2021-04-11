@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Divider, Text } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { sortByTimeStampOldest } from '../utils';
@@ -12,15 +12,9 @@ const selectPositions = (state: any) => {
     return state.liveStore.positions
 }
 
-const selectActual = (state: any) => { 
-    return state.liveStore.actualMoves
-}
-
 const MovePredictionChart = () => {
     const moveData = useSelector(selectMoves)
     const positionData = useSelector(selectPositions)
-    // const actualData = useSelector(selectActual)
-    // const actualMoveIndex = useSelector((state : any) => state.liveStore.actualMoveIndex)
     const combineData = [...moveData, ...positionData].sort(sortByTimeStampOldest)
     
     const latestData = (combineData.length !== 0) ? combineData.slice(-1)[0] : undefined
@@ -29,10 +23,8 @@ const MovePredictionChart = () => {
             return ["-", "-"]    
         }
         else if ("move" in obj) {
-            // return [latestData.move.toUpperCase(), latestData.accuracy + "%", actualData.slice(actualMoveIndex-1)[0].toUpperCase()]  
             return [latestData.move.toUpperCase(), latestData.accuracy + "%"]  
         } else if ("position" in obj) {
-            // return [latestData.position.toUpperCase(), "-", actualData.slice(actualMoveIndex-1)[0].toUpperCase()] 
             return [latestData.position.toUpperCase(), "-"] 
         }
         return ["-", "-"]    
