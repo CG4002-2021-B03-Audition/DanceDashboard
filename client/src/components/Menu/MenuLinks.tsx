@@ -16,18 +16,22 @@ const MenuLinks = (props: Props & $ElementProps<typeof Box>) => {
     const dispatch = useDispatch()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [ session, setSession ] = useState()
+    const [ isDisabled, setDisabled ] = useState(true)
     const handleConnect = () => {
         // add action here to clean state
         dispatch(ws_reset_state())
         moveSocket.connect()
         imuSocket.connect()
         emgSocket.connect()
+        setDisabled(false)
     }
 
     const handleDisconnect = async () => {
         moveSocket.disconnect()
         imuSocket.disconnect()
         emgSocket.disconnect()
+
+        setDisabled(true)
 
         // show summary modal upon session stop!
         onOpen()
@@ -50,8 +54,8 @@ const MenuLinks = (props: Props & $ElementProps<typeof Box>) => {
                 direction={["column", "row", "row", "row"]}
                 pt={[4, 4, 0, 0]}   
             >   
-                <Button onClick={handleConnect}>Start dance session!</Button>
-                <Button onClick={handleDisconnect}>Stop dance session!</Button>
+                <Button isDisabled={!isDisabled} onClick={handleConnect}>Start Session!</Button>
+                <Button isDisabled={isDisabled} onClick={handleDisconnect}>Stop Session!</Button>
                 <Badge 
                     colorScheme={props.isOnline ? "green" : "pink"}
                     variant="subtle"
