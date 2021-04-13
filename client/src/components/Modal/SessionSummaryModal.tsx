@@ -4,7 +4,6 @@ import { Divider, Stack, Text } from '@chakra-ui/layout';
 import { useToast } from '@chakra-ui/toast';
 import React, { useEffect, useState } from 'react'
 import { fetchDataInSession, sendSessionResult, updateSessionName } from '../../apiCalls';
-import EMGChart from '../../containers/EMGChart';
 import ExtraStatChart from '../../containers/ExtraStatChart';
 import { Session } from '../../store/session/types';
 import BaseModal from './BaseModal';
@@ -108,7 +107,6 @@ const SessionSummaryModal: React.FC<Props> = ({isOpen, onClose, session}) => {
             <Divider m={2}/>
             <Stack justify="center" isInline spacing={6}>
                 <ExtraStatChart danceData={danceActions}/>
-                {/* <EMGChart/> */}
             </Stack>
         </BaseModal>
     )

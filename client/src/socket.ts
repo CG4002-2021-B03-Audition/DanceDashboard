@@ -1,5 +1,5 @@
 import store from "./store/store";
-import { emg_message, imu_message, ws_move_connect, ws_move_message, WS_NEXT_ACTUAL, ws_pos_message } from "./store/ws/actions";
+import { emg_message, imu_message, ws_move_connect, ws_move_message, ws_pos_message } from "./store/ws/actions";
 
 class Socket {
     ws: WebSocket | undefined;
