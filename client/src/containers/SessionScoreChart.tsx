@@ -93,7 +93,7 @@ const SessionScoreChart: React.FC<Props> = ({ session, isIndividual, danceData, 
                 {!isIndividual ?
                 <> 
                     <Stack direction="row" mb={6} spacing={6}>
-                        <CircularProgress value={calculateScore()} size={64} color={getProgressColor(calculateScore())}>
+                        <CircularProgress value={calculateScore()} size={64} color={getProgressColor(calculateScore())} thickness="10px">
                             <CircularProgressLabel>
                                 <Text>
                                     {(sessionData.length === 0) ? "-" : `${scores[0]} / ${scores[1]}`}
@@ -103,7 +103,7 @@ const SessionScoreChart: React.FC<Props> = ({ session, isIndividual, danceData, 
                                 </Text>
                             </CircularProgressLabel>
                         </CircularProgress>     
-                        <CircularProgress value={calculatePosScore()} size={64} color={getProgressColor(calculatePosScore())}>
+                        <CircularProgress value={calculatePosScore()} size={64} color={getProgressColor(calculatePosScore())} thickness="10px">
                             <CircularProgressLabel>
                                 <Text>
                                     {(sessionData.length === 0) ? "-" : `${positionScore[0]} / ${positionScore[1]}`}

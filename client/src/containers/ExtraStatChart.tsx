@@ -24,7 +24,7 @@ const ExtraStatChart: React.FC<Props> = ({danceData}) => {
     return (
         <>
             <Stack justify="center" isInline spacing={6}>
-                <CircularProgress value={avgDelay ? avgDelay * 10 : 0} size={64} color={getProgressColor(avgDelay)}>
+                <CircularProgress value={avgDelay ? avgDelay * 10 : 0} size={64} color={getProgressColor(avgDelay)} thickness="10px">
                     <CircularProgressLabel>
                         <Tooltip label="Average time difference between the first dancer to perform the move and the last.">
                             <QuestionOutlineIcon boxSize="0.8em"/>

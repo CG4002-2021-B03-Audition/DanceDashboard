@@ -25,7 +25,7 @@ const AvgMoveAccuracy: React.FC<Props> = ({ chartName, danceData }) => {
     }, [danceData])
 
     return (
-        <CircularProgress value={ avgAccuracy ? avgAccuracy : 0} size={64} color={getProgressColor(avgAccuracy)}>
+        <CircularProgress value={ avgAccuracy ? avgAccuracy : 0} size={64} color={getProgressColor(avgAccuracy)} thickness="10px">
             <CircularProgressLabel>
                 <Tooltip label="Resemblance between your move and the actual.">
                     <QuestionOutlineIcon boxSize="0.8em"/>
