@@ -2,7 +2,6 @@ import { Grid, GridItem } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchDataInSession } from '../apiCalls';
-import ExtraStatChart from '../containers/ExtraStatChart';
 import OfflineDanceData from '../containers/OfflineDanceData';
 import OfflineMoveBreakdown from '../containers/OfflineMoveBreakdown';
 import SessionScoreChart from '../containers/SessionScoreChart';
@@ -18,6 +17,7 @@ const OfflineSessionPage: React.FC = () => {
 
     const [session, setSession] = useState<Session | undefined>()
     const [danceData, setDanceData] = useState([])
+    const [individualView, setIndividualView] = useState<boolean>(false)
 
     useEffect(() => {
         async function getDanceData(sid : number) {
@@ -39,6 +39,11 @@ const OfflineSessionPage: React.FC = () => {
         console.log("Set session to: ", session)
         setSession(session)
     }
+
+    const toggleIndividualView = () => {
+        setIndividualView(!individualView)
+    }
+
     return (
         <Grid
             h="200px"
@@ -49,16 +54,18 @@ const OfflineSessionPage: React.FC = () => {
             <GridItem m={2} rowSpan={2} colSpan={1}>
                 <SessionsTable onClick={handleSessionSelect}/>
             </GridItem>
-            <GridItem colSpan={2}>
-                <SessionScoreChart session={session}/>
+            <GridItem rowSpan={2} colSpan={2}>
+                <SessionScoreChart 
+                    session={session} 
+                    isIndividual={individualView} 
+                    danceData={danceData} 
+                    callback={toggleIndividualView}
+                />
             </GridItem>
             <GridItem colSpan={2}>
                 <OfflineMoveBreakdown session={session} />
             </GridItem>
-            <GridItem colSpan={2}>
-                <ExtraStatChart danceData={danceData}/>
-            </GridItem>
-            <GridItem colSpan={2}>
+            <GridItem colSpan={2} mt={10}>
                 <OfflineDanceData danceData={danceData} session={session}/>
             </GridItem>
         </Grid>

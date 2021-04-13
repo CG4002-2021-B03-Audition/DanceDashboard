@@ -10,6 +10,13 @@ export const sortByTimeStampOldest = (item1 : WsObj, item2 : WsObj) => {
     return (item1.timestamp < item2.timestamp) ? -1 : 1
 }
 
+export const isPosition = (action : string) => {
+    if (action.match(/^\d/) !== null) {
+        return true
+    }
+    return false
+}
+
 export const getProgressColor = (data : any) => {
     switch (true) {
         case (data >= 60):
