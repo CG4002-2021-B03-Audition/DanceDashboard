@@ -23,9 +23,9 @@ const MovePredictionChart = () => {
             return ["-", "-"]    
         }
         else if ("move" in obj) {
-            return [latestData.move.toUpperCase(), latestData.accuracy + "%"]  
+            return [latestData.move !== null ? latestData.move.toUpperCase() : "", latestData.accuracy + "%"]  
         } else if ("position" in obj) {
-            return [latestData.position.toUpperCase(), "-"] 
+            return [latestData.position !== null ? latestData.position.toUpperCase() : "", "-"] 
         }
         return ["-", "-"]    
     }

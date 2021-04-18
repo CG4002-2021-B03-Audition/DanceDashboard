@@ -12,7 +12,6 @@ const options: ChartOptions = {
       {
         ticks: {
           beginAtZero: true,
-          max: 1.5
         },
       },
     ],

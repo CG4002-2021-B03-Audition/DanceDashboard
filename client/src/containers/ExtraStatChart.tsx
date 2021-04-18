@@ -8,17 +8,17 @@ interface Props {
     danceData : any[]
 }
 
-const TOTAL_DANCE_MOVES = 12
-
 const ExtraStatChart: React.FC<Props> = ({danceData}) => {
     const [ avgDelay, setAvgDelay ] = useState<number>(0)
     useEffect(() => {
         let totalDelay = 0
+        let total_dance_moves = 0
         danceData.forEach((action : any) => {
             totalDelay += action.delay
+            total_dance_moves += 1
         })
 
-        setAvgDelay(totalDelay/TOTAL_DANCE_MOVES)
+        setAvgDelay(totalDelay/total_dance_moves)
     }, [danceData])
 
     return (
